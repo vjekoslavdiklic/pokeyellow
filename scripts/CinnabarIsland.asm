@@ -1,10 +1,12 @@
 CinnabarIsland_Script:
 	call EnableAutoTextBoxDrawing
 	ld hl, wCurrentMapScriptFlags
-	set BIT_CUR_MAP_LOADED_1, [hl]
+	set 5, [hl]
 	ResetEvent EVENT_MANSION_SWITCH_ON
 	ResetEvent EVENT_LAB_STILL_REVIVING_FOSSIL
 	ld hl, CinnabarIsland_ScriptPointers
+	ld a, $00
+	ld [wOpponentAfterWrongAnswer], a
 	ld a, [wCinnabarIslandCurScript]
 	jp CallFunctionInTable
 
@@ -26,13 +28,13 @@ CinnabarIslandDefaultScript:
 	ld a, PLAYER_DIR_UP
 	ld [wPlayerMovingDirection], a
 	ld a, TEXT_CINNABARISLAND_DOOR_IS_LOCKED
-	ldh [hTextID], a
+	ldh [hSpriteIndexOrTextID], a
 	call DisplayTextID
 	xor a
 	ldh [hJoyHeld], a
 	ld a, $1
 	ld [wSimulatedJoypadStatesIndex], a
-	ld a, D_DOWN
+	ld a, D_DOWN | B_BUTTON
 	ld [wSimulatedJoypadStatesEnd], a
 	call StartSimulatingJoypadStates
 	xor a

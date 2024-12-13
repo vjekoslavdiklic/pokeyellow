@@ -31,7 +31,7 @@ DEF SLOTS_SOMEONESKEYS EQU $ff
 	const TRADE_FOR_STICKY
 	const TRADE_FOR_BART    ; unused
 	const TRADE_FOR_SPIKE
-	const TRADE_FOR_MARTY   ; unused
+	const TRADE_FOR_LOLA
 	const TRADE_FOR_BUFFY
 	const TRADE_FOR_CEZANNE
 	const TRADE_FOR_RICKY
@@ -43,6 +43,19 @@ DEF NUM_NPC_TRADES EQU const_value
 	const TRADE_DIALOGSET_CASUAL
 	const TRADE_DIALOGSET_EVOLUTION
 	const TRADE_DIALOGSET_HAPPY
+
+; badges
+; wObtainedBadges and wBeatGymFlags bits
+	const_def
+	const BIT_BOULDERBADGE ; 0
+	const BIT_CASCADEBADGE ; 1
+	const BIT_THUNDERBADGE ; 2
+	const BIT_RAINBOWBADGE ; 3
+	const BIT_SOULBADGE    ; 4
+	const BIT_MARSHBADGE   ; 5
+	const BIT_VOLCANOBADGE ; 6
+	const BIT_EARTHBADGE   ; 7
+DEF NUM_BADGES EQU const_value
 
 ; OaksAideScript results
 DEF OAKS_AIDE_BAG_FULL        EQU $00

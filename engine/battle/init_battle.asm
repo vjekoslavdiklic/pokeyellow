@@ -5,12 +5,12 @@ InitBattle::
 
 InitOpponent:
 	ld a, [wCurOpponent]
-	ld [wCurPartySpecies], a
+	ld [wcf91], a
 	ld [wEnemyMonSpecies2], a
 	jr InitBattleCommon
 
 DetermineWildOpponent:
-	ld a, [wStatusFlags6]
+	ld a, [wd732]
 	bit BIT_DEBUG_MODE, a
 	jr z, .notDebugMode
 	ldh a, [hJoyHeld]
@@ -23,12 +23,16 @@ DetermineWildOpponent:
 	callfar TryDoWildEncounter
 	ret nz
 InitBattleCommon:
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; shinpokerednote: ADDED: store PKMN Levels at the beginning of the Battle.
+	farcall StorePKMNLevels
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	ld a, [wMapPalOffset]
 	push af
 	ld hl, wLetterPrintingDelayFlags
 	ld a, [hl]
 	push af
-	res BIT_TEXT_DELAY, [hl] ; no delay
+	res 1, [hl]
 	call InitBattleVariables
 	ld a, [wEnemyMonSpecies2]
 	sub OPP_ID_OFFSET
@@ -87,14 +91,14 @@ InitWildBattle:
 	ld a, "T"
 	ld [hli], a
 	ld [hl], "@"
-	ld a, [wCurPartySpecies]
+	ld a, [wcf91]
 	push af
 	ld a, MON_GHOST
-	ld [wCurPartySpecies], a
+	ld [wcf91], a
 	ld de, vFrontPic
 	call LoadMonFrontSprite ; load ghost sprite
 	pop af
-	ld [wCurPartySpecies], a
+	ld [wcf91], a
 	jr .spriteLoaded
 .isNoGhost
 	ld de, vFrontPic
@@ -157,8 +161,18 @@ _LoadTrainerPic:
 	ld d, a ; de contains pointer to trainer pic
 	ld a, [wLinkState]
 	and a
-	ld a, BANK("Pics 6") ; this is where all the trainer pics are (not counting Red's)
-	jr z, .loadSprite
+	jr nz, .useRed
+	ld a, [wTrainerClass]
+	cp JANINE ; first trainer class in "Trainer Pics 3"
+	ld a, BANK("Trainer Pics 3")
+	jr nc, .loadSprite
+	ld a, [wTrainerClass]
+	cp PROF_OAK ; first trainer class in "Trainer Pics 2"
+	ld a, BANK("Trainer Pics 2")
+	jr nc, .loadSprite
+	ld a, BANK("Trainer Pics 1")
+	jr .loadSprite
+.useRed
 	ld a, BANK(RedPicFront)
 .loadSprite
 	call UncompressSpriteFromDE
@@ -171,7 +185,7 @@ LoadMonBackPic:
 ; Assumes the monster's attributes have
 ; been loaded with GetMonHeader.
 	ld a, [wBattleMonSpecies2]
-	ld [wCurPartySpecies], a
+	ld [wcf91], a
 	hlcoord 1, 5
 	lb bc, 7, 8
 	call ClearScreenArea

@@ -16,5 +16,8 @@ all: $(tools)
 clean:
 	$(RM) $(tools)
 
-%: %.c common.h
+gfx: common.h
+scan_includes: common.h
+
+%: %.c
 	$(CC) $(CFLAGS) -o $@ $<

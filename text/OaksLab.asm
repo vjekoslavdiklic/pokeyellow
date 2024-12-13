@@ -108,8 +108,8 @@ _OaksLabGivePokeballsExplanationText::
 
 	para "Just like I showed"
 	line "you, throw a #"
-	cont "BALL at it and try"
-	cont "to catch it!"
+	cont "BALL at it and"
+	cont "try to catch it!"
 
 	para "This won't always"
 	line "work, though."
@@ -151,9 +151,20 @@ _OaksLabGirlText::
 	line "authority on"
 	cont "#MON!"
 
-	para "Many #MON"
-	line "trainers hold him"
-	cont "in high regard!"
+	para "We were shocked"
+	line "to recently learn"
+	cont "about the inter-"
+	cont "action of bug"
+	cont "and poison."
+
+	para "Poison is"
+	line "strong against"
+	cont "bug-types."
+	
+	para "It seems that"
+	line "bug is no longer"
+	cont "strong against"
+	cont "poison, however!"
 	done
 
 _OaksLabRivalFedUpWithWaitingText::
@@ -246,7 +257,7 @@ _OaksLabOakGivesText::
 _OaksLabReceivedText::
 	text "<PLAYER> received"
 	line "a @"
-	text_ram wNameBuffer
+	text_ram wcd6d
 	text "!@"
 	text_end
 
@@ -395,7 +406,40 @@ _OaksLabRivalLeaveItAllToMeText::
 	cont "<PLAYER>! Hahaha!"
 	done
 
+_CompletedDexText::
+	text "Incredible,"
+	line "<PLAYER>!"
+
+	para "You've completed"
+	line "the #DEX!"
+
+	para "Yet, the world"
+	line "of #MON holds"
+	cont "many mysteries."
+
+	para "This achievement"
+	line "spurs me on to"
+	cont "uncover what"
+	cont "remains hidden."
+
+	para "There's always"
+	line "more to uncover."
+
+	para "Research calls!"
+	done
+
 _OaksLabScientistText::
 	text "I study #MON as"
 	line "PROF.OAK's AIDE."
+
+	para "We recently"
+	line "finished a"
+	cont "paper proving"
+	cont "a rumor false."
+
+	para "As thought,"
+	line "the rare ghost-"
+	cont "type is super"
+	cont "effective to"
+	cont "psychic-types."
 	done

@@ -5,8 +5,7 @@ Route15GateLeftBinoculars:
 	call EnableAutoTextBoxDrawing
 	tx_pre Route15UpstairsBinocularsText
 	ld a, ARTICUNO
-	ld [wCurPartySpecies], a
-	call PlayCry
+	ld [wcf91], a
 	call DisplayMonFrontSpriteInBox
 	xor a
 	ldh [hAutoBGTransferEnabled], a

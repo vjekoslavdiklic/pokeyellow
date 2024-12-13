@@ -142,12 +142,12 @@ StartMenu_Pokemon::
 	jp .loop
 .canFly
 	call ChooseFlyDestination
-	ld a, [wStatusFlags6]
-	bit BIT_FLY_WARP, a
+	ld a, [wd732]
+	bit 3, a ; did the player decide to fly?
 	jr nz, .asm_5d4c
 	call LoadFontTilePatterns
-	ld hl, wStatusFlags4
-	set BIT_UNKNOWN_4_1, [hl]
+	ld hl, wd72e
+	set 1, [hl]
 	jp StartMenu_Pokemon
 .asm_5d4c
 	call Func_1510
@@ -164,11 +164,11 @@ StartMenu_Pokemon::
 	bit BIT_SOULBADGE, a
 	jp z, .newBadgeRequired
 	farcall IsSurfingAllowed
-	ld hl, wStatusFlags1
-	bit BIT_SURF_ALLOWED, [hl]
-	res BIT_SURF_ALLOWED, [hl]
+	ld hl, wd728
+	bit 1, [hl]
+	res 1, [hl]
 	jp z, .loop
-	ld a, [wCurPartySpecies]
+	ld a, [wcf91]
 	cp STARTER_PIKACHU
 	jr z, .surfingPikachu
 	ld a, $1
@@ -176,9 +176,9 @@ StartMenu_Pokemon::
 .surfingPikachu
 	ld a, $2
 .continue
-	ld [wd472], a
+	ld [wd473], a
 	ld a, SURFBOARD
-	ld [wCurItem], a
+	ld [wcf91], a
 	ld [wPseudoItemID], a
 	call UseItem
 	ld a, [wActionResultOrTookBattleTurn]
@@ -188,12 +188,12 @@ StartMenu_Pokemon::
 	jp .goBackToMap
 .reloadNormalSprite
 	xor a
-	ld [wd472], a
+	ld [wd473], a
 	jp .loop
 .strength
 	bit BIT_RAINBOWBADGE, a
 	jp z, .newBadgeRequired
-	predef PrintStrengthText
+	predef PrintStrengthTxt
 	call GBPalWhiteOutWithDelay3
 	jp .goBackToMap
 .flash
@@ -210,7 +210,7 @@ StartMenu_Pokemon::
 	text_end
 .dig
 	ld a, ESCAPE_ROPE
-	ld [wCurItem], a
+	ld [wcf91], a
 	ld [wPseudoItemID], a
 	call UseItem
 	ld a, [wActionResultOrTookBattleTurn]
@@ -230,13 +230,13 @@ StartMenu_Pokemon::
 .canTeleport
 	ld hl, .warpToLastPokemonCenterText
 	call PrintText
-	ld hl, wStatusFlags6
-	set BIT_FLY_WARP, [hl]
-	set BIT_ESCAPE_WARP, [hl]
+	ld hl, wd732
+	set 3, [hl]
+	set 6, [hl]
 	call Func_1510
-	ld hl, wStatusFlags4
-	set BIT_UNKNOWN_4_1, [hl]
-	res BIT_NO_BATTLES, [hl]
+	ld hl, wd72e
+	set 1, [hl]
+	res 4, [hl]
 	ld c, 60
 	call DelayFrames
 	call GBPalWhiteOutWithDelay3
@@ -276,7 +276,7 @@ StartMenu_Pokemon::
 	ld a, [wPartyAndBillsPCSavedMenuItem]
 	push af
 	ld a, POTION
-	ld [wCurItem], a
+	ld [wcf91], a
 	ld [wPseudoItemID], a
 	call UseItem
 	pop af
@@ -335,7 +335,10 @@ StartMenu_Item::
 	ld [wListMenuID], a
 	ld a, [wBagSavedMenuItem]
 	ld [wCurrentMenuItem], a
+	ld a, 1
+	ld [wTempFlag], a
 	call DisplayListMenuID
+	jp nz, .sortItems
 	ld a, [wCurrentMenuItem]
 	ld [wBagSavedMenuItem], a
 	jr nc, .choseItem
@@ -354,11 +357,7 @@ StartMenu_Item::
 	call PlaceUnfilledArrowMenuCursor
 	xor a
 	ld [wMenuItemToSwap], a
-	ld a, [wCurItem]
-	cp BICYCLE
-	jp z, .useOrTossItem
-.notBicycle1
-	ld a, USE_TOSS_MENU_TEMPLATE
+	ld a, USE_INFO_TOSS_MENU_TEMPLATE
 	ld [wTextBoxID], a
 	call DisplayTextBoxID
 	ld hl, wTopMenuItemY
@@ -369,7 +368,7 @@ StartMenu_Item::
 	xor a
 	ld [hli], a ; current menu item ID
 	inc hl
-	inc a ; a = 1
+	ld a, 2
 	ld [hli], a ; max menu item ID
 	ld a, A_BUTTON | B_BUTTON
 	ld [hli], a ; menu watched keys
@@ -381,33 +380,35 @@ StartMenu_Item::
 	jr z, .useOrTossItem
 	jp ItemMenuLoop
 .useOrTossItem ; if the player made the choice to use or toss the item
-	ld a, [wCurItem]
-	ld [wNamedObjectIndex], a
+	ld a, [wcf91]
+	ld [wd11e], a
 	call GetItemName
 	call CopyToStringBuffer
-	ld a, [wCurItem]
+	ld a, [wCurrentMenuItem]
+	cp a, 2
+	jr z, .tossItem
+	cp a, 1
+	jp z, .infoItem
+	ld a, [wcf91]
 	cp BICYCLE
-	jr nz, .notBicycle2
-	ld a, [wStatusFlags6]
-	bit BIT_ALWAYS_ON_BIKE, a
+	jr nz, .notBicycle
+	ld a, [wd732]
+	bit 5, a
 	jr z, .useItem_closeMenu
 	ld hl, CannotGetOffHereText
 	call PrintText
 	jp ItemMenuLoop
-.notBicycle2
-	ld a, [wCurrentMenuItem]
-	and a
-	jr nz, .tossItem
-; use item
-	ld [wPseudoItemID], a ; a must be 0 due to above conditional jump
-	ld a, [wCurItem]
+.notBicycle
+	xor a
+	ld [wPseudoItemID], a
+	ld a, [wcf91]
 	cp HM01
 	jr nc, .useItem_partyMenu
 	ld hl, UsableItems_CloseMenu
 	ld de, 1
 	call IsInArray
 	jr c, .useItem_closeMenu
-	ld a, [wCurItem]
+	ld a, [wcf91]
 	ld hl, UsableItems_PartyMenu
 	ld de, 1
 	call IsInArray
@@ -443,7 +444,7 @@ StartMenu_Item::
 	ld a, [wIsKeyItem]
 	and a
 	jr nz, .skipAskingQuantity
-	ld a, [wCurItem]
+	ld a, [wcf91]
 	call IsItemHM
 	jr c, .skipAskingQuantity
 	call DisplayChooseQuantityMenu
@@ -453,6 +454,12 @@ StartMenu_Item::
 	ld hl, wNumBagItems
 	call TossItem
 .tossZeroItems
+	jp ItemMenuLoop
+.infoItem
+	farcall DisplayItemDescription
+	jp ItemMenuLoop
+.sortItems
+	callfar SortItems
 	jp ItemMenuLoop
 
 CannotUseItemsHereText:
@@ -479,6 +486,9 @@ StartMenu_TrainerInfo::
 	predef DrawBadges ; draw badges
 	ld b, SET_PAL_TRAINER_CARD
 	call RunPaletteCommand
+	ld a, [wOnSGB]
+	and a
+	call z, Delay3
 	call GBPalNormal
 	call WaitForTextScrollButtonPress ; wait for button press
 	call GBPalWhiteOut
@@ -487,6 +497,9 @@ StartMenu_TrainerInfo::
 	call RunDefaultPaletteCommand
 	call ReloadMapData
 	farcall DrawStartMenu ; XXX what difference does this make?
+	ld a, [wOnSGB]
+	and a
+	call z, Delay3
 	call LoadGBPal
 	pop af
 	ldh [hTileAnimations], a
@@ -496,6 +509,12 @@ StartMenu_TrainerInfo::
 DrawTrainerInfo:
 	ld de, RedPicFront
 	lb bc, BANK(RedPicFront), $01
+	ld a, [wPlayerGender]
+	and a
+	jr z, .AreBoy
+	ld de, GreenPicFront
+	lb bc, BANK(GreenPicFront), $01
+.AreBoy
 	predef DisplayPicCenteredOrUpperRight
 	call DisableLCD
 	hlcoord 0, 2
@@ -512,9 +531,9 @@ DrawTrainerInfo:
 	ld bc, 8 tiles
 	push bc
 	call TrainerInfo_FarCopyData
-	ld hl, BlankLeaderNames
-	ld de, vChars2 tile $60
-	ld bc, $17 tiles
+	ld hl, CircleTile
+    ld de, vChars2 tile $76
+    ld bc, 1 tiles
 	call TrainerInfo_FarCopyData
 	pop bc
 	ld hl, BadgeNumbersTileGraphics  ; badge number tile patterns
@@ -657,8 +676,8 @@ TrainerInfo_DrawVerticalLine:
 	ret
 
 StartMenu_SaveReset::
-	ld a, [wStatusFlags4]
-	bit BIT_LINK_CONNECTED, a
+	ld a, [wd72e]
+	bit 6, a ; is the player using the link feature?
 	jp nz, Init
 	predef SaveSAV ; save the game
 	call LoadScreenTilesFromBuffer2 ; restore saved screen
@@ -681,7 +700,7 @@ SwitchPartyMon::
 	call SwitchPartyMon_ClearGfx
 	ld a, [wCurrentMenuItem]
 	call SwitchPartyMon_ClearGfx
-	jp RedrawPartyMenu_
+	jp RedrawPartyMenu__
 
 SwitchPartyMon_ClearGfx:
 	push af

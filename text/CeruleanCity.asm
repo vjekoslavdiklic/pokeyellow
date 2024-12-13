@@ -70,7 +70,7 @@ _CeruleanCityRocketText::
 
 _CeruleanCityRocketReceivedTM28Text::
 	text "<PLAYER> recovered"
-	line "TM28!@"
+	line "TM28 DIG!@"
 	text_end
 
 _CeruleanCityRocketIBetterGetMovingText::
@@ -213,10 +213,18 @@ _CeruleanCitySignText::
 _CeruleanCityTrainerTipsText::
 	text "TRAINER TIPS"
 
-	para "Pressing B Button"
-	line "during evolution"
-	cont "cancels the whole"
-	cont "process."
+	para "Critical Hits"
+	line "are easier to"
+	cont "land if a"
+	cont "#MON"
+	cont "is fast."
+
+	para "#MON with"
+	line "high base SPEED"
+
+	para "can land crits"
+	line "20 percent of "
+	cont "the time."
 	done
 
 _CeruleanCityBikeShopSign::

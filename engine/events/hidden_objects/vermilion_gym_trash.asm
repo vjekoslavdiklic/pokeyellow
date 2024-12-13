@@ -47,12 +47,12 @@ GymTrashScript:
 	cp b
 	jr z, .openSecondLock
 
-; Reset the cans.
-	ResetEvent EVENT_1ST_LOCK_OPENED
-	call Random
+; ; Reset the cans.
+; 	ResetEvent EVENT_1ST_LOCK_OPENED
+; 	call Random
 
-	and $e
-	ld [wFirstLockTrashCanIndex], a
+; 	and $e
+; 	ld [wFirstLockTrashCanIndex], a
 
 	tx_pre_id VermilionGymTrashFailText
 	jr .done
@@ -61,7 +61,7 @@ GymTrashScript:
 ; Completed the trash can puzzle.
 	SetEvent EVENT_2ND_LOCK_OPENED
 	ld hl, wCurrentMapScriptFlags
-	set BIT_CUR_MAP_LOADED_2, [hl]
+	set 6, [hl]
 
 	tx_pre_id VermilionGymTrashSuccessText3
 

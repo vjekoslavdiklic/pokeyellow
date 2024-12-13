@@ -1,15 +1,21 @@
 VermilionCity_Script:
+	; Reset the cans
+	ResetEvent EVENT_1ST_LOCK_OPENED
+	call Random
+	and $e
+	ld [wFirstLockTrashCanIndex], a
+
 	call EnableAutoTextBoxDrawing
 	ld hl, wd492
 	res 7, [hl]
 	ld hl, wCurrentMapScriptFlags
-	bit BIT_CUR_MAP_LOADED_2, [hl]
-	res BIT_CUR_MAP_LOADED_2, [hl]
+	bit 6, [hl]
+	res 6, [hl]
 	push hl
 	call nz, VermilionCityLeftSSAnneCallbackScript
 	pop hl
-	bit BIT_CUR_MAP_LOADED_1, [hl]
-	res BIT_CUR_MAP_LOADED_1, [hl]
+	bit 5, [hl]
+	res 5, [hl]
 	call nz, .setFirstLockTrashCanIndex
 	ld hl, VermilionCity_ScriptPointers
 	ld a, [wVermilionCityCurScript]
@@ -52,6 +58,7 @@ VermilionCity_ScriptPointers:
 	dw_const VermilionCityPlayerExitShipScript,      SCRIPT_VERMILIONCITY_PLAYER_EXIT_SHIP
 	dw_const VermilionCityPlayerMovingUp2Script,     SCRIPT_VERMILIONCITY_PLAYER_MOVING_UP2
 	dw_const VermilionCityPlayerAllowedToPassScript, SCRIPT_VERMILIONCITY_PLAYER_ALLOWED_TO_PASS
+	dw_const VermilionCityJennyPostBattleScript,     SCRIPT_VERMILIONCITY_JENNY_POST_BATTLE
 
 VermilionCityDefaultScript:
 	ld a, [wSpritePlayerStateData1FacingDirection]
@@ -64,7 +71,7 @@ VermilionCityDefaultScript:
 	ldh [hJoyHeld], a
 	ld [wSavedCoordIndex], a ; unnecessary
 	ld a, TEXT_VERMILIONCITY_SAILOR1
-	ldh [hTextID], a
+	ldh [hSpriteIndexOrTextID], a
 	call DisplayTextID
 	CheckEvent EVENT_SS_ANNE_LEFT
 	jr nz, .ship_departed
@@ -74,7 +81,7 @@ VermilionCityDefaultScript:
 	and a
 	ret nz
 .ship_departed
-	ld a, D_UP
+	ld a, D_UP | B_BUTTON
 	ld [wSimulatedJoypadStatesEnd], a
 	ld a, $1
 	ld [wSimulatedJoypadStatesIndex], a
@@ -148,6 +155,7 @@ VermilionCity_TextPointers:
 	dw_const VermilionCityPokemonFanClubSignText, TEXT_VERMILIONCITY_POKEMON_FAN_CLUB_SIGN
 	dw_const VermilionCityGymSignText,            TEXT_VERMILIONCITY_GYM_SIGN
 	dw_const VermilionCityHarborSignText,         TEXT_VERMILIONCITY_HARBOR_SIGN
+	dw_const VermilionCityJennyPostBattleText,    TEXT_VERMILION_CITY_JENNY_POST_BATTLE
 
 VermilionCityBeautyText:
 	text_far _VermilionCityBeautyText
@@ -286,3 +294,20 @@ VermilionCityOfficerJennyText:
 	text_asm
 	farcall VermilionCityPrintOfficerJennyText
 	jp TextScriptEnd
+
+VermilionCityJennyPostBattleScript:
+	ld a, [wIsInBattle]
+	inc a
+	jr z, .skip	; Kick out if the player lost.
+	ld a, TEXT_VERMILION_CITY_JENNY_POST_BATTLE
+	ldh [hSpriteIndexOrTextID], a
+	call DisplayTextID
+	SetEvent EVENT_BEAT_JENNY
+.skip
+	ld a, $0
+	ld [wVermilionCityCurScript], a
+	ld [wCurMapScript], a
+	ret
+VermilionCityJennyPostBattleText:
+	text_far _JennyAfterBattleText
+	text_end

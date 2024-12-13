@@ -59,6 +59,9 @@ _Route22RivalAfterBattleText1::
 	line "out how to get"
 	cont "past them!"
 
+	para "I will need"
+	line "to get stronger!"
+
 	para "You should quit"
 	line "dawdling and get"
 	cont "a move on!"

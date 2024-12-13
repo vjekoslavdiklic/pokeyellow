@@ -1,12 +1,12 @@
 VermilionGym_Script:
 	ld hl, wCurrentMapScriptFlags
-	bit BIT_CUR_MAP_LOADED_1, [hl]
-	res BIT_CUR_MAP_LOADED_1, [hl]
+	bit 5, [hl]
+	res 5, [hl]
 	push hl
 	call nz, .LoadNames
 	pop hl
-	bit BIT_CUR_MAP_LOADED_2, [hl]
-	res BIT_CUR_MAP_LOADED_2, [hl]
+	bit 6, [hl]
+	res 6, [hl]
 	call nz, VermilionGymSetDoorTile
 	call EnableAutoTextBoxDrawing
 	ld hl, VermilionGymTrainerHeaders
@@ -61,23 +61,26 @@ VermilionGymLTSurgeAfterBattleScript:
 	jp z, VermilionGymResetScripts
 	ld a, D_RIGHT | D_LEFT | D_UP | D_DOWN
 	ld [wJoyIgnore], a
-
+	ld a, [wGameStage] ; Check if player has beat the game
+	and a
+	jr nz, SurgeRematchPostBattle
+; fallthrough
 VermilionGymLTSurgeReceiveTM24Script:
 	ld a, TEXT_VERMILIONGYM_LT_SURGE_THUNDER_BADGE_INFO
-	ldh [hTextID], a
+	ldh [hSpriteIndexOrTextID], a
 	call DisplayTextID
 	SetEvent EVENT_BEAT_LT_SURGE
 	lb bc, TM_THUNDERBOLT, 1
 	call GiveItem
 	jr nc, .bag_full
 	ld a, TEXT_VERMILIONGYM_LT_SURGE_RECEIVED_TM24
-	ldh [hTextID], a
+	ldh [hSpriteIndexOrTextID], a
 	call DisplayTextID
 	SetEvent EVENT_GOT_TM24
 	jr .gym_victory
 .bag_full
 	ld a, TEXT_VERMILIONGYM_LT_SURGE_TM24_NO_ROOM
-	ldh [hTextID], a
+	ldh [hSpriteIndexOrTextID], a
 	call DisplayTextID
 .gym_victory
 	ld hl, wObtainedBadges
@@ -90,6 +93,12 @@ VermilionGymLTSurgeReceiveTM24Script:
 
 	jp VermilionGymResetScripts
 
+SurgeRematchPostBattle:
+	ld a, TEXT_VERMILIONGYM_REMATCH_POST_BATTLE
+	ldh [hSpriteIndexOrTextID], a
+	call DisplayTextID
+	jp VermilionGymResetScripts
+
 VermilionGym_TextPointers:
 	def_text_pointers
 	dw_const VermilionGymLTSurgeText,                 TEXT_VERMILIONGYM_LT_SURGE
@@ -100,6 +109,7 @@ VermilionGym_TextPointers:
 	dw_const VermilionGymLTSurgeThunderBadgeInfoText, TEXT_VERMILIONGYM_LT_SURGE_THUNDER_BADGE_INFO
 	dw_const VermilionGymLTSurgeReceivedTM24Text,     TEXT_VERMILIONGYM_LT_SURGE_RECEIVED_TM24
 	dw_const VermilionGymLTSurgeTM24NoRoomText,       TEXT_VERMILIONGYM_LT_SURGE_TM24_NO_ROOM
+	dw_const VermilionGymRematchPostBattleText, 	  TEXT_VERMILIONGYM_REMATCH_POST_BATTLE
 
 VermilionGymTrainerHeaders:
 	def_trainers 2
@@ -121,15 +131,18 @@ VermilionGymLTSurgeText:
 	call DisableWaitingAfterTextDisplay
 	jr .text_script_end
 .got_tm24_already
+	ld a, [wGameStage] ; Check if player has beat the game
+	and a
+	jr nz, .SurgeRematch
 	ld hl, .PostBattleAdviceText
 	call PrintText
 	jr .text_script_end
 .before_beat
 	ld hl, .PreBattleText
 	call PrintText
-	ld hl, wStatusFlags3
-	set BIT_TALKED_TO_TRAINER, [hl]
-	set BIT_PRINT_END_BATTLE_TEXT, [hl]
+	ld hl, wd72d
+	set 6, [hl]
+	set 7, [hl]
 	ld hl, VermilionGymLTSurgeReceivedThunderBadgeText
 	ld de, VermilionGymLTSurgeReceivedThunderBadgeText
 	call SaveEndBattleTextPointers
@@ -141,6 +154,30 @@ VermilionGymLTSurgeText:
 	ld [wGymLeaderNo], a
 	xor a
 	ldh [hJoyHeld], a
+	jr .endBattle
+.SurgeRematch
+	ld hl, .PreBattleRematch1Text
+	call PrintText
+	call YesNoChoice
+	ld a, [wCurrentMenuItem]
+	and a
+	jr nz, .refused
+	ld hl, .PreBattleRematch2Text
+	call PrintText
+	call Delay3
+	ld a, OPP_LT_SURGE
+	ld [wCurOpponent], a
+	ld a, 2
+	ld [wTrainerNo], a
+	ld a, $4 ; new script
+	ld [wVermilionGymCurScript], a
+	ld [wCurMapScript], a
+	jr .endBattle
+.refused
+	ld hl, .PreBattleRematchRefusedText
+	call PrintText
+	jr .text_script_end
+.endBattle
 	ld a, SCRIPT_VERMILIONGYM_LT_SURGE_AFTER_BATTLE
 	ld [wVermilionGymCurScript], a
 	ld [wCurMapScript], a
@@ -153,6 +190,22 @@ VermilionGymLTSurgeText:
 
 .PostBattleAdviceText:
 	text_far _VermilionGymLTSurgePostBattleAdviceText
+	text_end
+
+.PreBattleRematch1Text
+	text_far _VermilionGymRematchPreBattle1Text
+	text_end
+
+.PreBattleRematchRefusedText
+	text_far _GymRematchRefusedText
+	text_end
+
+.PreBattleRematch2Text
+	text_far _VermilionGymPreRematchBattle2Text
+	text_end
+
+VermilionGymRematchPostBattleText:
+	text_far _VermilionGymRematchPostBattleText
 	text_end
 
 VermilionGymLTSurgeThunderBadgeInfoText:

@@ -38,6 +38,50 @@ _PewterGymBrockPostBattleAdviceText::
 	cont "your abilities!"
 	done
 
+_PewterGymRematchPreBattle1Text::
+	text "Since our last"
+	line "battle, my"
+	
+	para "#MON have"
+	line "grown!"
+
+	para "ROCK-hard will"
+	line "meets peak skill"
+	cont "today!"
+
+	para "Ready for the"
+	line "rematch of a"
+	cont "lifetime?"
+	done
+
+_GymRematchRefusedText::
+	text "Maybe some other"
+	line "time."
+	done
+
+_PewterGymPreRematchBattle2Text::
+	text "Stones sharpen!"
+	line "Let's battle!"
+	done
+
+_PewterGymRematchPostBattleText::
+	text "Incredible!"
+
+	para "Your strength"
+	line "is unmatched!"
+
+	para "True to your"
+	line "title, CHAMPION."
+
+	para "Continue to lead"
+	line "#MON with"
+	cont "honor and"
+	cont "courage!"
+
+	para "New challenges"
+	line "await."
+	done
+
 _PewterGymBrockWaitTakeThisText::
 	text "Wait! Take this"
 	line "with you!"
@@ -45,7 +89,7 @@ _PewterGymBrockWaitTakeThisText::
 
 _PewterGymReceivedTM34Text::
 	text "<PLAYER> received"
-	line "TM34!@"
+	line "TM34 BIDE!@"
 	text_end
 
 _TM34ExplanationText::
@@ -148,15 +192,27 @@ _PewterGymGuideBeginAdviceText::
 	prompt
 
 _PewterGymGuideAdviceText::
-	text "The 1st #MON"
-	line "out in a match is"
-	cont "at the top of the"
-	cont "#MON LIST!"
+	text "BROCK's lead"
+	line "is GEODUDE!"
 
-	para "By changing the"
-	line "order of #MON,"
-	cont "matches could be"
-	cont "made easier!"
+	para "Offense driven,"
+	line "it can throw"
+	cont "rocks with high"
+	cont "accuracy!"
+	
+	para "His ONIX is"
+	line "all defense!"
+	cont "Watch out for"
+	cont "its BIND!"
+
+	para "It will be tough"
+	line "for your PIKACHU"
+	cont "at this GYM!"
+
+	para "Electric attacks"
+	line "are harmless to"
+	cont "BROCK's ground-"
+	cont "type #MON."
 	done
 
 _PewterGymGuideFreeServiceText::
@@ -174,6 +230,19 @@ _PewterGymGuidePostBattleText::
 _PewterGymGuyText::
 	text "All right! Let's"
 	line "get happening!"
+
+	para "BROCK's lead"
+	line "is GEODUDE!"
+
+	para "Offense driven,"
+	line "it can throw"
+	cont "rocks with high"
+	cont "accuracy!"
+	
+	para "His ONIX is"
+	line "all defense!"
+	cont "Watch out for"
+	cont "its BIND!"
 
 	para "It will be tough"
 	line "for your PIKACHU"

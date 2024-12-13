@@ -57,7 +57,7 @@ UpdatePlayerSprite:
 .next
 	ld [wSpritePlayerStateData1FacingDirection], a ; facing direction
 	ld a, [wFontLoaded]
-	bit BIT_FONT_LOADED, a
+	bit 0, a
 	jr z, .moving
 .notMoving
 ; zero the animation counters
@@ -67,11 +67,51 @@ UpdatePlayerSprite:
 	call Func_4e32
 	jr .skipSpriteAnim
 .moving
-	ld a, [wMovementFlags]
-	bit BIT_SPINNING, a
+	ld a, [wd736]
+	bit 7, a ; is the player sprite spinning due to a spin tile?
 	jr nz, .skipSpriteAnim
-	call Func_5274
-	call Func_4e32
+	; call Func_5274
+	; call Func_4e32
+	ld a, [hCurrentSpriteOffset]
+	add $7
+	ld l, a
+	ld a, [hl]
+	inc a
+	ld [hl], a
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;joenote - If B is being held to go faster and full joypad is enabled (i.e. not in a cutscene),
+;Then increase player animation speed by 25%
+	push bc
+	ld c, 4
+	ld b, a
+	ld a, [wJoyIgnore]
+	and a
+	jr nz, .doneSpeed
+	ld a, [hJoyHeld]
+	and B_BUTTON
+	jr z, .doneSpeed
+	ld c, 3
+.doneSpeed
+	ld a, b
+	cp c
+	pop bc
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;	cp 4
+;	jr nz, .calcImageIndex
+	jr c, .calcImageIndex	;joenote - prevents interframe counter from increasing forever
+	xor a
+	ld [hl], a
+	inc hl
+	ld a, [hl]
+	inc a
+	and $3
+	ld [hl], a
+.calcImageIndex
+	ld a, [wSpriteStateData1 + 8]
+	ld b, a
+	ld a, [wSpriteStateData1 + 9]
+	add b
+	ld [wSpriteStateData1 + 2], a
 .skipSpriteAnim
 ; If the player is standing on a grass tile, make the player's sprite have
 ; lower priority than the background so that it's partially obscured by the
@@ -120,11 +160,11 @@ UpdateNPCSprite:
 	ld l, a
 	inc l
 	ld a, [hl]        ; x#SPRITESTATEDATA1_MOVEMENTSTATUS
-	bit BIT_FACE_PLAYER, a
+	bit 7, a ; is the face player flag set?
 	jp nz, MakeNPCFacePlayer
 	ld b, a
 	ld a, [wFontLoaded]
-	bit BIT_FONT_LOADED, a
+	bit 0, a
 	jp nz, notYetMoving
 	ld a, b
 	cp $2
@@ -162,11 +202,11 @@ UpdateNPCSprite:
 	jr nz, .next
 ; reached end of wNPCMovementDirections list
 	ld [hl], a ; store $ff in movement byte 1, disabling scripted movement
-	ld hl, wStatusFlags5
-	res BIT_SCRIPTED_NPC_MOVEMENT, [hl]
+	ld hl, wd730
+	res 0, [hl]
 	xor a
 	ld [wSimulatedJoypadStatesIndex], a
-	ld [wUnusedOverrideSimulatedJoypadStatesIndex], a
+	ld [wUnusedCD3A], a
 	ret
 .next
 	cp WALK
@@ -367,10 +407,10 @@ MakeNPCFacePlayer:
 
 ; Check if the behaviour of the NPC facing the player when spoken to is
 ; disabled. This is only done when rubbing the S.S. Anne captain's back.
-	ld a, [wStatusFlags3]
-	bit BIT_NO_NPC_FACE_PLAYER, a
+	ld a, [wd72d]
+	bit 5, a
 	jr nz, notYetMoving
-	res BIT_FACE_PLAYER, [hl]
+	res 7, [hl]
 	ld a, [wPlayerDirection]
 	bit PLAYER_DIR_BIT_UP, a
 	jr z, .notFacingDown
@@ -610,7 +650,7 @@ CanWalkOntoTile:
 	add SPRITESTATEDATA2_YDISPLACEMENT
 	ld l, a
 	ld a, [hli]        ; x#SPRITESTATEDATA2_YDISPLACEMENT (initialized at $8, keep track of where a sprite did go)
-	bit 7, d           ; check if going upwards (d == -1)
+	bit 7, d           ; check if going upwards (d=$ff)
 	jr nz, .upwards
 	add d
 	; bug: these tests against $5 probably were supposed to prevent
@@ -628,7 +668,7 @@ CanWalkOntoTile:
 .checkHorizontal
 	ld d, a
 	ld a, [hl]         ; x#SPRITESTATEDATA2_XDISPLACEMENT (initialized at $8, keep track of where a sprite did go)
-	bit 7, e           ; check if going left (e == -1)
+	bit 7, e           ; check if going left (e=$ff)
 	jr nz, .left
 	add e
 	cp $5              ; compare, but no conditional jump like in the vertical check above (bug?)
@@ -710,12 +750,12 @@ DoScriptedNPCMovement:
 ; a few times in the game. It is used when the NPC and player must walk together
 ; in sync, such as when the player is following the NPC somewhere. An NPC can't
 ; be moved in sync with the player using the other method.
-	ld a, [wStatusFlags5]
-	bit BIT_SCRIPTED_MOVEMENT_STATE, a
+	ld a, [wd730]
+	bit 7, a
 	ret z
-	ld hl, wStatusFlags4
-	bit BIT_INIT_SCRIPTED_MOVEMENT, [hl]
-	set BIT_INIT_SCRIPTED_MOVEMENT, [hl]
+	ld hl, wd72e
+	bit 7, [hl]
+	set 7, [hl]
 	jp z, InitScriptedNPCMovement
 	ld hl, wNPCMovementDirections2
 	ld a, [wNPCMovementDirections2Index]

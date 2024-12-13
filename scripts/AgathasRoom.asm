@@ -11,9 +11,12 @@ AgathasRoom_Script:
 AgathaShowOrHideExitBlock:
 ; Blocks or clears the exit to the next room.
 	ld hl, wCurrentMapScriptFlags
-	bit BIT_CUR_MAP_LOADED_1, [hl]
-	res BIT_CUR_MAP_LOADED_1, [hl]
+	bit 5, [hl]
+	res 5, [hl]
 	ret z
+	ld a, [wGameStage] ; Check if player has beat the game
+	and a
+	jr nz, .Rematch
 	CheckEvent EVENT_BEAT_AGATHAS_ROOM_TRAINER_0
 	jr z, .blockExitToNextRoom
 	ld a, $e
@@ -24,6 +27,11 @@ AgathaShowOrHideExitBlock:
 	ld [wNewTileBlockID], a
 	lb bc, 0, 2
 	predef_jump ReplaceTileBlock
+.Rematch
+	CheckEvent EVENT_BEAT_AGATHAS_ROOM_TRAINER_1
+	jr z, .blockExitToNextRoom
+	ld a, $e
+	jr .setExitBlock
 
 ResetAgathaScript:
 	xor a ; SCRIPT_AGATHASROOM_DEFAULT
@@ -75,9 +83,9 @@ AgathasRoomDefaultScript:
 	jr z, AgathaScriptWalkIntoRoom
 .stopPlayerFromLeaving
 	ld a, TEXT_AGATHASROOM_AGATHA_DONT_RUN_AWAY
-	ldh [hTextID], a
+	ldh [hSpriteIndexOrTextID], a
 	call DisplayTextID
-	ld a, D_UP
+	ld a, D_UP | B_BUTTON
 	ld [wSimulatedJoypadStatesEnd], a
 	ld a, $1
 	ld [wSimulatedJoypadStatesIndex], a
@@ -110,27 +118,43 @@ AgathasRoomAgathaEndBattleScript:
 	ld a, [wIsInBattle]
 	cp $ff
 	jp z, ResetAgathaScript
+	ld a, [wGameStage] ; Check if player has beat the game
+	and a
+	jr nz, .Rematch
 	ld a, TEXT_AGATHASROOM_AGATHA
-	ldh [hTextID], a
+.continue
+	ldh [hSpriteIndexOrTextID], a
 	call DisplayTextID
 	ld a, SCRIPT_CHAMPIONSROOM_PLAYER_ENTERS
 	ld [wChampionsRoomCurScript], a
 	ret
+.Rematch
+	ld a, TEXT_AGATHASROOM_AGATHA_REMATCH
+	jr .continue
 
 AgathasRoom_TextPointers:
 	def_text_pointers
 	dw_const AgathasRoomAgathaText,            TEXT_AGATHASROOM_AGATHA
+	dw_const AgathasRoomAgathaRematchText,     TEXT_AGATHASROOM_AGATHA_REMATCH
 	dw_const AgathasRoomAgathaDontRunAwayText, TEXT_AGATHASROOM_AGATHA_DONT_RUN_AWAY
 
 AgathasRoomTrainerHeaders:
 	def_trainers
 AgathasRoomTrainerHeader0:
 	trainer EVENT_BEAT_AGATHAS_ROOM_TRAINER_0, 0, AgathaBeforeBattleText, AgathaEndBattleText, AgathaAfterBattleText
+AgathasRoomTrainerHeader1:
+	trainer EVENT_BEAT_AGATHAS_ROOM_TRAINER_1, 0, AgathaRematchBeforeBattleText, AgathaRematchEndBattleText, AgathaRematchAfterBattleText
 	db -1 ; end
 
 AgathasRoomAgathaText:
 	text_asm
 	ld hl, AgathasRoomTrainerHeader0
+	call TalkToTrainer
+	jp TextScriptEnd
+
+AgathasRoomAgathaRematchText:
+	text_asm
+	ld hl, AgathasRoomTrainerHeader1
 	call TalkToTrainer
 	jp TextScriptEnd
 
@@ -144,6 +168,18 @@ AgathaEndBattleText:
 
 AgathaAfterBattleText:
 	text_far _AgathaAfterBattleText
+	text_end
+
+AgathaRematchBeforeBattleText:
+	text_far _AgathaRematchBeforeBattleText
+	text_end
+
+AgathaRematchEndBattleText:
+	text_far _AgathaRematchEndBattleText
+	text_end
+
+AgathaRematchAfterBattleText:
+	text_far _AgathaRematchAfterBattleText
 	text_end
 
 AgathasRoomAgathaDontRunAwayText:

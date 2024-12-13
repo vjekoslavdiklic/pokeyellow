@@ -8,7 +8,7 @@ _PokemartGreetingText::
 	done
 
 _PokemonFaintedText::
-	text_ram wNameBuffer
+	text_ram wcd6d
 	text_start
 	line "fainted!"
 	done
@@ -22,8 +22,16 @@ _PlayerBlackedOutText::
 	prompt
 
 _RepelWoreOffText::
-	text "REPEL's effect"
+	text "Repel's effect"
 	line "wore off."
+	done
+
+_RepelWoreOffUseAnotherText::
+	text_ram wStringBuffer
+	text "'s"
+	line "effect wore off."
+
+	para "Use another?"
 	done
 
 _PokemartBuyingGreetingText::
@@ -149,7 +157,7 @@ _ForgotAndText::
 	text_ram wLearnMoveMonName
 	text " forgot"
 	line "@"
-	text_ram wNameBuffer
+	text_ram wcd6d
 	text "!"
 
 	para "And..."
@@ -179,11 +187,21 @@ _NeedYourPokemonText::
 	line "your #MON."
 	done
 
+_TemPokemonOuNao::
+	text "You don't have"
+	line "any #MON!"
+	done
+
 _PokemonFightingFitText::
 	text "Thank you!"
 	line "Your #MON are"
 	cont "fighting fit!"
 	prompt
+
+; _PokemonFightingFitShortText::
+; 	text "Your #MON are"
+; 	line "fighting fit!"
+; 	done
 
 _PokemonCenterFarewellText::
 	text "We hope to see"

@@ -10,7 +10,7 @@ _AIBattleUseItemText::
 	text_ram wTrainerName
 	text_start
 	line "used @"
-	text_ram wNameBuffer
+	text_ram wcd6d
 	text_start
 	cont "on @"
 	text_ram wEnemyMonNick
@@ -45,7 +45,7 @@ _TradeSendsText::
 	text_ram wLinkEnemyTrainerName
 	text " sends"
 	line "@"
-	text_ram wNameBuffer
+	text_ram wcd6d
 	text "."
 	done
 
@@ -56,7 +56,7 @@ _TradeWavesFarewellText::
 	done
 
 _TradeTransferredText::
-	text_ram wNameBuffer
+	text_ram wcd6d
 	text " is"
 	line "transferred."
 	done
@@ -64,7 +64,7 @@ _TradeTransferredText::
 _TradeTakeCareText::
 	text "Take good care of"
 	line "@"
-	text_ram wNameBuffer
+	text_ram wcd6d
 	text "."
 	done
 
@@ -72,7 +72,7 @@ _TradeWillTradeText::
 	text_ram wLinkEnemyTrainerName
 	text " will"
 	line "trade @"
-	text_ram wNameBuffer
+	text_ram wcd6d
 	text_start
 	done
 
@@ -732,9 +732,10 @@ _ViridianBlackboardPrlzText::
 
 _ViridianBlackboardBurnText::
 	text "A burn reduces"
-	line "power and speed."
-	cont "It also causes"
-	cont "ongoing damage."
+	line "power."
+	
+	para "It also causes"
+	line "ongoing damage."
 
 	para "Burns remain"
 	line "after battles."
@@ -788,15 +789,13 @@ _VermilionGymTrashSuccessText3::
 
 _VermilionGymTrashFailText::
 	text "Nope! There's"
-	line "only trash here."
-	cont "Hey! The electric"
-	cont "locks were reset!@"
+	line "only trash here.@"
 	text_end
 
 _FoundHiddenItemText::
 	text "<PLAYER> found"
 	line "@"
-	text_ram wNameBuffer
+	text_ram wcd6d
 	text "!@"
 	text_end
 
@@ -1119,7 +1118,7 @@ _CantMoveText::
 _MoveIsDisabledText::
 	text "<USER>'s"
 	line "@"
-	text_ram wNameBuffer
+	text_ram wcd6d
 	text " is"
 	cont "disabled!"
 	prompt
@@ -1128,12 +1127,7 @@ _MonName1Text::
 	text "<USER>@"
 	text_end
 
-_Used1Text::
-	text_start
-	line "used @"
-	text_end
-
-_Used2Text::
+_UsedText::
 	text_start
 	line "used @"
 	text_end
@@ -1147,23 +1141,7 @@ _MoveNameText::
 	text_ram wStringBuffer
 	text "@"
 
-_ExclamationPoint1Text::
-	text "!"
-	done
-
-_ExclamationPoint2Text::
-	text "!"
-	done
-
-_ExclamationPoint3Text::
-	text "!"
-	done
-
-_ExclamationPoint4Text::
-	text "!"
-	done
-
-_ExclamationPoint5Text::
+_ExclamationPointText::
 	text "!"
 	done
 
@@ -1254,14 +1232,14 @@ _HitXTimesText::
 	prompt
 
 _GainedText::
-	text_ram wNameBuffer
+	text_ram wcd6d
 	text " gained"
 	line "@"
 	text_end
 
 _WithExpAllText::
-	text "with EXP.ALL,"
-	cont "@"
+	text "Party gained"
+	line "@"
 	text_end
 
 _BoostedText::
@@ -1275,10 +1253,10 @@ _ExpPointsText::
 	prompt
 
 _GrewLevelText::
-	text_ram wNameBuffer
+	text_ram wcd6d
 	text " grew"
 	line "to level @"
-	text_decimal wCurEnemyLevel, 1, 3
+	text_decimal wCurEnemyLVL, 1, 3
 	text "!@"
 	text_end
 
@@ -1320,3 +1298,16 @@ _HookedMonAttackedText::
 	text_start
 	cont "attacked!"
 	prompt
+
+_DifficultyText::
+    text "Select Difficulty"
+    done
+
+_AreYouSureText::
+	text "Are you sure?"
+	done
+
+_BoyGirlText::
+    text "Play as a boy, or"
+    line "as a girl?"
+    done

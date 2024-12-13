@@ -4,11 +4,11 @@ PrepareOakSpeech:
 	ld a, [wOptions]
 	push af
 	; Retrieve BIT_DEBUG_MODE set in DebugMenu for StartNewGameDebug.
-	; BUG: StartNewGame carries over BIT_ALWAYS_ON_BIKE from previous save files,
+	; BUG: StartNewGame carries over bit 5 from previous save files,
 	; which causes CheckForceBikeOrSurf to not return.
-	; To fix this in debug builds, reset BIT_ALWAYS_ON_BIKE here or in StartNewGame.
+	; To fix this in debug builds, reset bit 5 here or in StartNewGame.
 	; In non-debug builds, the instructions can be removed.
-	ld a, [wStatusFlags6]
+	ld a, [wd732]
 	push af
 	ld a, [wPrinterSettings]
 	push af
@@ -27,7 +27,7 @@ PrepareOakSpeech:
 	pop af
 	ld [wPrinterSettings], a
 	pop af
-	ld [wStatusFlags6], a
+	ld [wd732], a
 	pop af
 	ld [wOptions], a
 	pop af
@@ -60,7 +60,7 @@ OakSpeech:
 	predef InitPlayerData2
 	ld hl, wNumBoxItems
 	ld a, POTION
-	ld [wCurItem], a
+	ld [wcf91], a
 	ld a, 1
 	ld [wItemQuantity], a
 	call AddItemToInventory
@@ -69,9 +69,44 @@ OakSpeech:
 	call PrepareForSpecialWarp
 	xor a
 	ldh [hTileAnimations], a
-	ld a, [wStatusFlags6]
+	ld a, [wd732]
 	bit BIT_DEBUG_MODE, a
 	jp nz, .skipSpeech
+.MenuCursorLoop ; difficulty menu
+	ld hl, DifficultyText
+  	call PrintText
+  	call DifficultyChoice
+	ld a, [wCurrentMenuItem]
+	ld [wDifficulty], a
+	cp 0 ; normal
+	jr z, .SelectedNormalMode
+	cp 1 ; hard
+	jr z, .SelectedHardMode
+	; space for more game modes down the line
+.SelectedNormalMode
+	ld hl, NormalModeText
+	call PrintText
+	jp .YesNoNormalHard
+.SelectedHardMode
+	ld hl, HardModeText
+	call PrintText
+.YesNoNormalHard ; Give the player a brief description of each game mode and make sure that's what they want
+  	call YesNoNormalHardChoice
+	ld a, [wCurrentMenuItem]
+	cp 0
+	jr z, .doneLoop
+	jp .MenuCursorLoop ; If player says no, back to difficulty selection
+.doneLoop
+   	call ClearScreen ; clear the screen before resuming normal intro
+
+	; Gender Menu
+	ld hl, BoyGirlText  ; added to the same file as the other oak text
+	call PrintText     ; show this text
+	call BoyGirlChoice ; added routine at the end of this file
+	ld a, [wCurrentMenuItem]
+	ld [wPlayerGender], a ; store player's gender. 00 for boy, 01 for girl
+	call ClearScreen ; clear the screen before resuming normal intro
+
 	ld de, ProfOakPic
 	lb bc, BANK(ProfOakPic), $00
 	call IntroDisplayPicCenteredOrUpperRight
@@ -81,8 +116,8 @@ OakSpeech:
 	call GBFadeOutToWhite
 	call ClearScreen
 	ld a, STARTER_PIKACHU
-	ld [wCurSpecies], a
-	ld [wCurPartySpecies], a
+	ld [wd0b5], a
+	ld [wcf91], a
 	call GetMonHeader
 	hlcoord 6, 4
 	call LoadFlippedFrontSpriteByMonIndex
@@ -93,6 +128,12 @@ OakSpeech:
 	call ClearScreen
 	ld de, RedPicFront
 	lb bc, BANK(RedPicFront), $00
+	ld a, [wPlayerGender] 	; check gender
+	and a      				; check gender
+	jr z, .NotGreen1
+	ld de, GreenPicFront
+	lb bc, BANK(GreenPicFront), $00
+.NotGreen1:
 	call IntroDisplayPicCenteredOrUpperRight
 	call MovePicLeft
 	ld hl, IntroducePlayerText
@@ -112,10 +153,16 @@ OakSpeech:
 	call ClearScreen
 	ld de, RedPicFront
 	lb bc, BANK(RedPicFront), $00
+	ld a, [wPlayerGender] ; check gender
+	and a      ; check gender
+	jr z, .NotGreen2
+	ld de, GreenPicFront
+	lb bc, Bank(GreenPicFront), $00
+.NotGreen2:
 	call IntroDisplayPicCenteredOrUpperRight
 	call GBFadeInFromWhite
-	ld a, [wStatusFlags3]
-	and a ; ???
+	ld a, [wd72d]
+	and a
 	jr nz, .next
 	ld hl, OakSpeechText3
 	call PrintText
@@ -132,6 +179,17 @@ OakSpeech:
 	ld de, RedSprite
 	ld b, BANK(RedSprite)
 	ld c, $0C
+	; call CopyVideoData
+	; ld de, ShrinkPic1
+	; lb bc, BANK(ShrinkPic1), $00
+	; call IntroDisplayPicCenteredOrUpperRight
+	ld a, [wPlayerGender] ; check gender
+	and a      ; check gender
+	jr z, .NotGreen3
+	ld de,GreenSprite
+	lb bc, BANK(GreenSprite), $0C
+.NotGreen3:
+	ld hl, vSprites
 	call CopyVideoData
 	ld de, ShrinkPic1
 	lb bc, BANK(ShrinkPic1), $00
@@ -183,6 +241,21 @@ IntroduceRivalText:
 OakSpeechText3:
 	text_far _OakSpeechText3
 	text_end
+NormalModeText:
+	text_far _NormalModeText
+	text_end
+HardModeText:
+	text_far _HardModeText
+	text_end
+DifficultyText:
+	text_far _DifficultyText
+	text_end
+YesNoNormalHardText:
+	text_far _AreYouSureText
+	text_end
+BoyGirlText:
+    text_far _BoyGirlText
+    text_end
 
 FadeInIntroPic:
 	ld hl, IntroFadePalettes
@@ -232,12 +305,12 @@ IntroDisplayPicCenteredOrUpperRight:
 	ld a, b
 	call UncompressSpriteFromDE
 	ld a, $0
-	call OpenSRAM
+	call SwitchSRAMBankAndLatchClockData
 	ld hl, sSpriteBuffer1
 	ld de, sSpriteBuffer0
 	ld bc, $310
 	call CopyData
-	call CloseSRAM
+	call PrepareRTCDataAndDisableSRAM
 	ld de, vFrontPic
 	call InterlaceMergeSpriteBuffers
 	pop bc
@@ -250,3 +323,60 @@ IntroDisplayPicCenteredOrUpperRight:
 	xor a
 	ldh [hStartTileID], a
 	predef_jump CopyUncompressedPicToTilemap
+
+; displays difficulty choice
+DifficultyChoice::
+	call SaveScreenTilesToBuffer1
+	call InitDifficultyTextBoxParameters
+	jr DisplayDifficultyChoice
+
+InitDifficultyTextBoxParameters::
+  	ld a, $8 ; loads the value for the difficulty menu
+	ld [wTwoOptionMenuID], a
+	coord hl, 5, 5
+	ld bc, $606 ; Cursor Pos
+	ret
+	
+DisplayDifficultyChoice::
+	ld a, $14
+	ld [wTextBoxID], a
+	call DisplayTextBoxID
+	jp LoadScreenTilesFromBuffer1
+
+; display yes/no choice
+YesNoNormalHardChoice::
+	call SaveScreenTilesToBuffer1
+	call InitYesNoNormalHardTextBoxParameters
+	jr DisplayYesNoNormalHardChoice
+
+InitYesNoNormalHardTextBoxParameters::
+  	ld a, $0 ; loads the value for the difficulty menu
+	ld [wTwoOptionMenuID], a
+	coord hl, 7, 5
+	ld bc, $608 ; Cursor Pos
+	ret
+	
+DisplayYesNoNormalHardChoice::
+	ld a, $14
+	ld [wTextBoxID], a
+	call DisplayTextBoxID
+	jp LoadScreenTilesFromBuffer1
+
+; displays boy/girl choice
+BoyGirlChoice::
+	call SaveScreenTilesToBuffer1
+	call InitBoyGirlTextBoxParameters
+	jr DisplayBoyGirlChoice
+
+InitBoyGirlTextBoxParameters::
+   ld a, $1 ; loads the value for the unused North/West choice, that was changed to say Boy/Girl
+	ld [wTwoOptionMenuID], a
+	coord hl, 6, 5 
+	ld bc, $607
+	ret
+	
+DisplayBoyGirlChoice::
+	  ld a, $14
+	  ld [wTextBoxID], a
+	  call DisplayTextBoxID
+	  jp LoadScreenTilesFromBuffer1

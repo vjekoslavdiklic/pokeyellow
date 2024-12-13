@@ -12,7 +12,7 @@ AnimateHallOfFame:
 	call FillMemory
 	call EnableLCD
 	ld hl, rLCDC
-	set rLCDC_BG_TILEMAP, [hl]
+	set 3, [hl]
 	xor a
 	ld hl, wHallOfFame
 	ld bc, HOF_TEAM
@@ -87,7 +87,7 @@ AnimateHallOfFame:
 	xor a
 	ldh [hWY], a
 	ld hl, rLCDC
-	res rLCDC_BG_TILEMAP, [hl]
+	res 3, [hl]
 	ret
 
 HallOfFameText:
@@ -100,8 +100,8 @@ HoFShowMonOrPlayer:
 	ld a, $c0
 	ldh [hSCX], a
 	ld a, [wHoFMonSpecies]
-	ld [wCurPartySpecies], a
-	ld [wCurSpecies], a
+	ld [wcf91], a
+	ld [wd0b5], a
 	ld [wBattleMonSpecies2], a
 	ld [wWholeScreenPaletteMonSpecies], a
 	ld a, [wHoFMonOrPlayer]
@@ -180,13 +180,13 @@ HoFDisplayMonInfo:
 	ld de, HoFMonInfoText
 	call PlaceString
 	hlcoord 1, 4
-	ld de, wNameBuffer
+	ld de, wcd6d
 	call PlaceString
 	ld a, [wHoFMonLevel]
 	hlcoord 8, 7
 	call PrintLevelCommon
 	ld a, [wHoFMonSpecies]
-	ld [wCurSpecies], a
+	ld [wd0b5], a
 	hlcoord 3, 9
 	predef PrintMonType
 	ret
@@ -197,20 +197,36 @@ HoFMonInfoText:
 	next "TYPE2/@"
 
 HoFLoadPlayerPics:
+	ld a, [wPlayerGender] ; New gender check
+	and a      ; New gender check
+	jr nz, .GirlStuff1
 	ld de, RedPicFront
 	ld a, BANK(RedPicFront)
+	jr .Routine ; skip the girl stuff and go to main routine
+.GirlStuff1
+	ld de, GreenPicFront
+	ld a, BANK(GreenPicFront)
+.Routine ; resume original routine
 	call UncompressSpriteFromDE
 	ld a, $0
-	call OpenSRAM
+	call SwitchSRAMBankAndLatchClockData
 	ld hl, sSpriteBuffer1
 	ld de, sSpriteBuffer0
 	ld bc, $310
 	call CopyData
-	call CloseSRAM
+	call PrepareRTCDataAndDisableSRAM
 	ld de, vFrontPic
 	call InterlaceMergeSpriteBuffers
+	ld a, [wPlayerGender] ; new gender check
+	and a      ; new gender check
+	jr nz, .GirlStuff2
 	ld de, RedPicBack
 	ld a, BANK(RedPicBack)
+	jr .routine2 ; skip the girl stuff and continue original routine if guy
+.GirlStuff2
+	ld de, GreenPicBack
+	ld a, BANK(GreenPicBack)
+.routine2 ; original routine
 	call UncompressSpriteFromDE
 	predef ScaleSpriteByTwo
 	ld de, vBackPic
@@ -226,13 +242,39 @@ HoFLoadMonPlayerPicTileIDs:
 HoFDisplayPlayerStats:
 	SetEvent EVENT_HALL_OF_FAME_DEX_RATING
 	predef DisplayDexRating
+
+	hlcoord 11, 0 ; Legacy Text Box
+	lb bc, 2, 7
+	call TextBoxBorder
+
+	ld a, [wDifficulty] ; Check if player is on hard mode
+	and a
+	jr z, .NormalModeText
+
+	hlcoord 12, 1
+	ld de, LegacyText
+	call PlaceString
+	hlcoord 12, 2
+	ld de, HardText
+	call PlaceString
+	jp .Next1
+
+.NormalModeText
+	hlcoord 12, 1
+	ld de, YellowText
+	call PlaceString
+	hlcoord 12, 2
+	ld de, LegacyText
+	call PlaceString
+.Next1
+
 	hlcoord 0, 4
 	lb bc, 6, 10
 	call TextBoxBorder
-	hlcoord 5, 0
+	hlcoord 0, 0
 	lb bc, 2, 9
 	call TextBoxBorder
-	hlcoord 7, 2
+	hlcoord 1, 2
 	ld de, wPlayerName
 	call PlaceString
 	hlcoord 1, 6
@@ -265,6 +307,15 @@ HoFPrintTextAndDelay:
 	ld c, 120
 	jp DelayFrames
 
+YellowText:
+	db "YELLOW@"
+
+LegacyText:
+	db "LEGACY@"
+
+HardText:
+	db "HARD@"
+
 HoFPlayTimeText:
 	db "PLAY TIME@"
 
@@ -290,7 +341,7 @@ HoFRecordMonInfo:
 	ld [hli], a
 	ld e, l
 	ld d, h
-	ld hl, wNameBuffer
+	ld hl, wcd6d
 	ld bc, NAME_LENGTH
 	jp CopyData
 

@@ -15,7 +15,10 @@
 *.patch
 
 # rgbds extras
-*.map
+# *.map
+pokeyellow.map
+pokeyellow_debug.map
+
 *.sym
 
 # tool binaries
@@ -27,8 +30,20 @@
 
 # save game files
 *.sgm
+*.srm
 *.sav
 *.rtc
 *.sn*
 *.sa*
 *.sg1
+*.ss0
+*.ss1
+*.ss2
+*.ss3
+*.ss4
+*.ss5
+*.ss6
+*.ss7
+*.ss8
+*.ss9
+*.cheats

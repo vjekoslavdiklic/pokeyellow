@@ -36,10 +36,52 @@ _FuchsiaGymKogaPostBattleAdviceText::
 	line "terrorize foes!"
 	done
 
+_FuchsiaGymRematchPreBattle1Text::
+	text "Fwahahaha!"
+
+    para "CHAMPION, huh?"
+	
+    para "I commend your"
+    line "strength."
+
+    para "But as a ninja"
+    line "master, I've"
+    cont "grown stronger."
+
+    para "Dare face me"
+	line "again, with all"
+	cont "my power?"
+	done
+
+_FuchsiaGymPreRematchBattle2Text::
+	text "Let us see if"
+	line "the CHAMPION"
+	
+	para "can survive the"
+	line "ultimate poison"
+	cont "technique!"
+    done
+
+_FuchsiaGymRematchPostBattleText::
+	text "You've withstood"
+	line "the deadliest"
+	cont "of poisons and"
+	cont "emerged stronger."
+
+	para "Truly, you are"
+	line "worthy of the"
+	cont "title CHAMPION."
+
+	para "Continue to hone"
+	line "your skills, for"
+	cont "the path of a"
+	cont "ninja never ends."
+	done
+
 _FuchsiaGymKogaSoulBadgeInfoText::
 	text "Now that you have"
 	line "the SOULBADGE,"
-	cont "the DEFENSE of"
+	cont "the SPEED of"
 	cont "your #MON"
 	cont "increases!"
 
@@ -114,22 +156,35 @@ _FuchsiaGymRocker2AfterBattleText::
 	cont "master!"
 	done
 
-_FuchsiaGymRocker3BattleText::
-	text "Let's see you"
-	line "beat my special"
-	cont "techniques!"
+_FuchsiaGymJanineBattleText::
+	text "Fufufu..."
+	
+	para "Caught off guard?"
+
+	para "I'm JANINE, a"
+	line "ninja of KOGA's"
+	cont "GYM."
+
+	para "Prepare to face"
+	line "my poison!"
 	done
 
-_FuchsiaGymRocker3EndBattleText::
-	text "You"
-	line "had me fooled!"
+_FuchsiaGymJanineEndBattleText::
+	text "You're a"
+	line "tough one. You"
+	cont "definitely won…"
 	prompt
 
-_FuchsiaGymRocker3AfterBattleText::
-	text "I like poison and"
-	line "sleep techniques,"
-	cont "as they linger"
-	cont "after battle!"
+_FuchsiaGymJanineAfterBattleText::
+	text "I'm going to"
+	line "really apply"
+
+	para "myself and improve"
+	line "my skills."
+
+	para "I want to become"
+	line "better than both"
+	cont "Father and you!"
 	done
 
 _FuchsiaGymRocker4BattleText::
@@ -198,20 +253,22 @@ _FuchsiaGymRocker6AfterBattleText::
 	done
 
 _FuchsiaGymGymGuideChampInMakingText::
-	text "Yo! Champ in"
+	text "Yo! CHAMP in"
 	line "making!"
 
 	para "FUCHSIA GYM is"
 	line "riddled with"
-	cont "invisible walls!"
+	cont "poison-types!"
 
-	para "KOGA might appear"
-	line "close, but he's"
-	cont "blocked off!"
+	para "That might appear"
+	line "easy, but KOGA"
+	cont "does well to"
+	cont "cover his ground-"
+	cont "type weakness."
 
-	para "You have to find"
-	line "gaps in the walls"
-	cont "to reach him!"
+	para "Psychic-type"
+	line "#MON should"
+	cont "do well here!"
 	done
 
 _FuchsiaGymGymGuideBeatKogaText::

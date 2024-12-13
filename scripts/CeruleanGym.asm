@@ -1,7 +1,7 @@
 CeruleanGym_Script:
 	ld hl, wCurrentMapScriptFlags
-	bit BIT_CUR_MAP_LOADED_2, [hl]
-	res BIT_CUR_MAP_LOADED_2, [hl]
+	bit 6, [hl]
+	res 6, [hl]
 	call nz, .LoadNames
 	call EnableAutoTextBoxDrawing
 	ld hl, CeruleanGymTrainerHeaders
@@ -42,23 +42,26 @@ CeruleanGymMistyPostBattleScript:
 	jp z, CeruleanGymResetScripts
 	ld a, D_RIGHT | D_LEFT | D_UP | D_DOWN
 	ld [wJoyIgnore], a
-
+	ld a, [wGameStage] ; Check if player has beat the game
+	and a
+	jr nz, MistyRematchPostBattle
+; fallthrough
 CeruleanGymReceiveTM11:
 	ld a, TEXT_CERULEANGYM_MISTY_CASCADE_BADGE_INFO
-	ldh [hTextID], a
+	ldh [hSpriteIndexOrTextID], a
 	call DisplayTextID
 	SetEvent EVENT_BEAT_MISTY
 	lb bc, TM_BUBBLEBEAM, 1
 	call GiveItem
 	jr nc, .BagFull
 	ld a, TEXT_CERULEANGYM_MISTY_RECEIVED_TM11
-	ldh [hTextID], a
+	ldh [hSpriteIndexOrTextID], a
 	call DisplayTextID
 	SetEvent EVENT_GOT_TM11
 	jr .gymVictory
 .BagFull
 	ld a, TEXT_CERULEANGYM_MISTY_TM11_NO_ROOM
-	ldh [hTextID], a
+	ldh [hSpriteIndexOrTextID], a
 	call DisplayTextID
 .gymVictory
 	ld hl, wObtainedBadges
@@ -71,6 +74,12 @@ CeruleanGymReceiveTM11:
 
 	jp CeruleanGymResetScripts
 
+MistyRematchPostBattle:
+	ld a, TEXT_CERULEANGYM_REMATCH_POST_BATTLE
+	ldh [hSpriteIndexOrTextID], a
+	call DisplayTextID
+	jp CeruleanGymResetScripts
+
 CeruleanGym_TextPointers:
 	def_text_pointers
 	dw_const CeruleanGymMistyText,                 TEXT_CERULEANGYM_MISTY
@@ -80,6 +89,7 @@ CeruleanGym_TextPointers:
 	dw_const CeruleanGymMistyCascadeBadgeInfoText, TEXT_CERULEANGYM_MISTY_CASCADE_BADGE_INFO
 	dw_const CeruleanGymMistyReceivedTM11Text,     TEXT_CERULEANGYM_MISTY_RECEIVED_TM11
 	dw_const CeruleanGymMistyTM11NoRoomText,       TEXT_CERULEANGYM_MISTY_TM11_NO_ROOM
+	dw_const CeruleanGymRematchPostBattleText, 	   TEXT_CERULEANGYM_REMATCH_POST_BATTLE
 
 CeruleanGymTrainerHeaders:
 	def_trainers 2
@@ -99,15 +109,18 @@ CeruleanGymMistyText:
 	call DisableWaitingAfterTextDisplay
 	jr .done
 .afterBeat
+	ld a, [wGameStage] ; Check if player has beat the game
+	and a
+	jr nz, .MistyRematch
 	ld hl, .TM11ExplanationText
 	call PrintText
 	jr .done
 .beforeBeat
 	ld hl, .PreBattleText
 	call PrintText
-	ld hl, wStatusFlags3
-	set BIT_TALKED_TO_TRAINER, [hl]
-	set BIT_PRINT_END_BATTLE_TEXT, [hl]
+	ld hl, wd72d
+	set 6, [hl]
+	set 7, [hl]
 	ld hl, CeruleanGymMistyReceivedCascadeBadgeText
 	ld de, CeruleanGymMistyReceivedCascadeBadgeText
 	call SaveEndBattleTextPointers
@@ -119,6 +132,30 @@ CeruleanGymMistyText:
 	ld [wGymLeaderNo], a
 	xor a
 	ldh [hJoyHeld], a
+	jr .endBattle
+.MistyRematch
+	ld hl, .PreBattleRematch1Text
+	call PrintText
+	call YesNoChoice
+	ld a, [wCurrentMenuItem]
+	and a
+	jr nz, .refused
+	ld hl, .PreBattleRematch2Text
+	call PrintText
+	call Delay3
+	ld a, OPP_MISTY
+	ld [wCurOpponent], a
+	ld a, 2
+	ld [wTrainerNo], a
+	ld a, $4 ; new script
+	ld [wCeruleanGymCurScript], a
+	ld [wCurMapScript], a
+	jr .endBattle
+.refused
+	ld hl, .PreBattleRematchRefusedText
+	call PrintText
+	jr .done
+.endBattle
 	ld a, SCRIPT_CERULEANGYM_MISTY_POST_BATTLE
 	ld [wCeruleanGymCurScript], a
 .done
@@ -130,6 +167,22 @@ CeruleanGymMistyText:
 
 .TM11ExplanationText:
 	text_far _CeruleanGymMistyTM11ExplanationText
+	text_end
+
+.PreBattleRematch1Text
+	text_far _CeruleanGymRematchPreBattle1Text
+	text_end
+
+.PreBattleRematchRefusedText
+	text_far _GymRematchRefusedText
+	text_end
+
+.PreBattleRematch2Text
+	text_far _CeruleanGymPreRematchBattle2Text
+	text_end
+
+CeruleanGymRematchPostBattleText:
+	text_far _CeruleanGymRematchPostBattleText
 	text_end
 
 CeruleanGymMistyCascadeBadgeInfoText:

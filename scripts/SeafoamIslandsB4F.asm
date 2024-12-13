@@ -3,6 +3,7 @@ SeafoamIslandsB4F_Script:
 	ld a, [wSeafoamIslandsB4FCurScript]
 	ld hl, SeafoamIslandsB4F_ScriptPointers
 	jp CallFunctionInTable
+	ret
 
 SeafoamIslandsB4FResetScript:
 	xor a
@@ -18,6 +19,7 @@ SeafoamIslandsB4F_ScriptPointers:
 	dw_const SeafoamIslandsB4FMoveObjectScript,    SCRIPT_SEAFOAMISLANDSB4F_MOVE_OBJECT
 	dw_const SeafoamIslandsB4FObjectMoving2Script, SCRIPT_SEAFOAMISLANDSB4F_OBJECT_MOVING2
 	dw_const SeafoamIslandsB4FObjectMoving3Script, SCRIPT_SEAFOAMISLANDSB4F_OBJECT_MOVING3
+	dw_const WeebraPostBattleScript,               SCRIPT_SEAFOAMISLANDSB4F_WEEBRA_POST_BATTLE
 	EXPORT SCRIPT_SEAFOAMISLANDSB4F_MOVE_OBJECT ; used by engine/overworld/player_state.asm
 
 SeafoamIslandsB4FObjectMoving3Script:
@@ -46,11 +48,11 @@ SeafoamIslandsB4FDefaultScript:
 	ld a, 1
 .forcePlayerUpFromSurfExit
 	ld [wSimulatedJoypadStatesIndex], a
-	ld a, D_UP
+	ld a, D_UP | B_BUTTON
 	ld [wSimulatedJoypadStatesEnd], a
 	call StartSimulatingJoypadStates
-	ld hl, wStatusFlags7
-	res BIT_FORCED_WARP, [hl]
+	ld hl, wFlags_D733
+	res 2, [hl]
 	ld a, SCRIPT_SEAFOAMISLANDSB4F_OBJECT_MOVING1
 	ld [wSeafoamIslandsB4FCurScript], a
 	ret
@@ -138,16 +140,95 @@ SeafoamIslandsB4F_TextPointers:
 	dw_const BoulderText,                       TEXT_SEAFOAMISLANDSB4F_BOULDER1
 	dw_const BoulderText,                       TEXT_SEAFOAMISLANDSB4F_BOULDER2
 	dw_const SeafoamIslandsB4FArticunoText,     TEXT_SEAFOAMISLANDSB4F_ARTICUNO
+	dw_const SeafoamIslandsWeebraText1,      	TEXT_SEAFOAM_ISLANDS_WEEBRA
 	dw_const SeafoamIslandsB4FBouldersSignText, TEXT_SEAFOAMISLANDSB4F_BOULDERS_SIGN
 	dw_const SeafoamIslandsB4FDangerSignText,   TEXT_SEAFOAMISLANDSB4F_DANGER_SIGN
+	dw_const SeafoamIslandsWeebraEndBattleText1,TEXT_SEAFOAM_ISLANDS_WEEBRA_END_BATTLE
 
 ; Articuno is object 3, but its event flag is bit 2.
 ; This is not a problem because its sight range is 0, and
 ; trainer headers were not stored by ExecuteCurMapScriptInTable.
-	def_trainers 2
+SeafoamIslandsB4FTrainerHeaders:
+	def_trainers 3
 ArticunoTrainerHeader:
 	trainer EVENT_BEAT_ARTICUNO, 0, SeafoamIslandsB4FArticunoBattleText, SeafoamIslandsB4FArticunoBattleText, SeafoamIslandsB4FArticunoBattleText
 	db -1 ; end
+
+SeafoamIslandsWeebraText1:
+	text_asm
+	CheckEvent EVENT_BEAT_WEEBRA
+	jr nz, .AlreadyFought
+	ld hl, SeafoamIslandsWeebraBattleText1
+	call PrintText
+	call Delay3
+	ld a, OPP_WEEBRA
+	ld [wCurOpponent], a
+	ld a, 1
+	ld [wTrainerNo], a
+.skip
+	ld a, SCRIPT_SEAFOAMISLANDSB4F_WEEBRA_POST_BATTLE
+	ld [wSeafoamIslandsB4FCurScript], a
+	ld [wCurMapScript], a
+	jp TextScriptEnd
+.AlreadyFought
+	ld hl, SeafoamIslandsWeebraAfterBattleText1
+	call PrintText
+	call Delay3
+	ld hl, WeebraFightCheckCoords
+	call ArePlayerCoordsInArray
+	jp nc, TextScriptEnd ; if weebra has already moved, don't move
+	jr .skip
+	
+WeebraPostBattleScript:
+	ld a, [wIsInBattle]
+	inc a
+	jr z, .skip	; Kick out if the player lost.
+	ld hl, WeebraFightCheckCoords
+	call ArePlayerCoordsInArray
+	jr nc, .skip ; if weebra has already moved, don't move
+	CheckEvent EVENT_BEAT_WEEBRA
+	jr nz, .dontDoText
+	ld a, TEXT_SEAFOAM_ISLANDS_WEEBRA_END_BATTLE
+	ldh [hSpriteIndexOrTextID], a
+	call DisplayTextID
+	SetEvent EVENT_BEAT_WEEBRA
+.dontDoText
+	ld a, SEAFOAM_ISLANDS_WEEBRA
+	ldh [hSpriteIndex], a
+	ld de, MovementData_Weebra
+	call MoveSprite
+	ld a, SPRITE_FACING_LEFT
+	ldh [hSpriteFacingDirection], a
+	xor a
+	ld [wJoyIgnore], a
+.skip
+	ld a, SCRIPT_SEAFOAMISLANDSB4F_DEFAULT
+	ld [wSeafoamIslandsB4FCurScript], a
+	ld [wCurMapScript], a
+	; ResetEvent EVENT_INITIATED_WEEBRA_BATTLE
+	ret
+SeafoamIslandsWeebraAfterBattleText1:
+	text_far _SeafoamIslandsWeebraAfterBattleText1
+	text_end
+
+WeebraFightCheckCoords:
+	dbmapcoord 7, 2
+	dbmapcoord 7, 3
+	db -1 ; end
+
+MovementData_Weebra:
+	db NPC_MOVEMENT_RIGHT
+	db NPC_MOVEMENT_RIGHT
+	db NPC_MOVEMENT_RIGHT
+	db -1 ; end
+	
+SeafoamIslandsWeebraBattleText1:
+	text_far _SeafoamIslandsWeebraBattleText1
+	text_end
+	
+SeafoamIslandsWeebraEndBattleText1:
+	text_far _SeafoamIslandsWeebraEndBattleText1
+	text_end
 
 SeafoamIslandsB4FArticunoText:
 	text_asm

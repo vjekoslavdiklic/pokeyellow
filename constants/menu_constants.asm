@@ -1,4 +1,4 @@
-DEF BAG_ITEM_CAPACITY EQU 20
+DEF BAG_ITEM_CAPACITY EQU 59
 DEF PC_ITEM_CAPACITY  EQU 50
 
 ; text box IDs
@@ -8,7 +8,7 @@ DEF PC_ITEM_CAPACITY  EQU 50
 	const MENU_TEMPLATE_03                  ; $03 unused
 	const FIELD_MOVE_MON_MENU               ; $04
 	const JP_MOCHIMONO_MENU_TEMPLATE        ; $05
-	const USE_TOSS_MENU_TEMPLATE            ; $06
+	const USE_INFO_TOSS_MENU_TEMPLATE       ; $06
 	const MENU_TEMPLATE_07                  ; $07 unused
 	const JP_SAVE_MESSAGE_MENU_TEMPLATE     ; $08
 	const JP_SPEED_OPTIONS_MENU_TEMPLATE    ; $09
@@ -42,10 +42,8 @@ DEF PC_ITEM_CAPACITY  EQU 50
 	const TRADE_CANCEL_MENU ; 5
 	const HEAL_CANCEL_MENU  ; 6
 	const NO_YES_MENU       ; 7
+	const DIFFICULTY_SELECTION_MENU ; 8
 DEF NUM_TWO_OPTION_MENUS EQU const_value
-
-; wTwoOptionMenuID
-DEF BIT_SECOND_MENU_OPTION_DEFAULT EQU 7
 
 ; menu exit method constants for list menus and the buy/sell/quit menu
 DEF CHOSE_MENU_ITEM   EQU 1 ; pressed A

@@ -1,7 +1,7 @@
 SaffronGym_Script:
 	ld hl, wCurrentMapScriptFlags
-	bit BIT_CUR_MAP_LOADED_2, [hl]
-	res BIT_CUR_MAP_LOADED_2, [hl]
+	bit 6, [hl]
+	res 6, [hl]
 	call nz, .LoadNames
 	call EnableAutoTextBoxDrawing
 	ld hl, SaffronGymTrainerHeaders
@@ -42,23 +42,26 @@ SaffronGymSabrinaPostBattle:
 	jp z, SaffronGymResetScripts
 	ld a, D_RIGHT | D_LEFT | D_UP | D_DOWN
 	ld [wJoyIgnore], a
-
+	ld a, [wGameStage] ; Check if player has beat the game
+	and a
+	jr nz, SabrinaRematchPostBattle
+; fallthrough
 SaffronGymSabrinaReceiveTM46Script:
 	ld a, TEXT_SAFFRONGYM_SABRINA_MARSH_BADGE_INFO
-	ldh [hTextID], a
+	ldh [hSpriteIndexOrTextID], a
 	call DisplayTextID
 	SetEvent EVENT_BEAT_SABRINA
 	lb bc, TM_PSYWAVE, 1
 	call GiveItem
 	jr nc, .BagFull
 	ld a, TEXT_SAFFRONGYM_SABRINA_RECEIVED_TM46
-	ldh [hTextID], a
+	ldh [hSpriteIndexOrTextID], a
 	call DisplayTextID
 	SetEvent EVENT_GOT_TM46
 	jr .gymVictory
 .BagFull
 	ld a, TEXT_SAFFRONGYM_SABRINA_TM46_NO_ROOM
-	ldh [hTextID], a
+	ldh [hSpriteIndexOrTextID], a
 	call DisplayTextID
 .gymVictory
 	ld hl, wObtainedBadges
@@ -69,6 +72,12 @@ SaffronGymSabrinaReceiveTM46Script:
 	; deactivate gym trainers
 	SetEventRange EVENT_BEAT_SAFFRON_GYM_TRAINER_0, EVENT_BEAT_SAFFRON_GYM_TRAINER_6
 
+	jp SaffronGymResetScripts
+
+SabrinaRematchPostBattle:
+	ld a, TEXT_SAFFRONGYM_REMATCH_POST_BATTLE
+	ldh [hSpriteIndexOrTextID], a
+	call DisplayTextID
 	jp SaffronGymResetScripts
 
 SaffronGym_TextPointers:
@@ -85,6 +94,7 @@ SaffronGym_TextPointers:
 	dw_const SaffronGymSabrinaMarshBadgeInfoText, TEXT_SAFFRONGYM_SABRINA_MARSH_BADGE_INFO
 	dw_const SaffronGymSabrinaReceivedTM46Text,   TEXT_SAFFRONGYM_SABRINA_RECEIVED_TM46
 	dw_const SaffronGymSabrinaTM46NoRoomText,     TEXT_SAFFRONGYM_SABRINA_TM46_NO_ROOM
+	dw_const SaffronGymRematchPostBattleText,     TEXT_SAFFRONGYM_REMATCH_POST_BATTLE
 
 SaffronGymTrainerHeaders:
 	def_trainers 2
@@ -112,26 +122,71 @@ SaffronGymSabrinaText:
 	jr nz, .afterBeat
 	call z, SaffronGymSabrinaReceiveTM46Script
 	call DisableWaitingAfterTextDisplay
-	jr .done
+	jr .todone
 .afterBeat
+	ld a, [wGameStage] ; Check if player has beat the game
+	and a
+	jr nz, .SabrinaRematch
 	ld hl, .PostBattleAdviceText
 	call PrintText
-	jr .done
+	jr .todone
 .beforeBeat
 	ld hl, .Text
 	call PrintText
-	ld hl, wStatusFlags3
-	set BIT_TALKED_TO_TRAINER, [hl]
-	set BIT_PRINT_END_BATTLE_TEXT, [hl]
+	ld hl, wd72d
+	set 6, [hl]
+	set 7, [hl]
 	ld hl, .ReceivedMarshBadgeText
 	ld de, .ReceivedMarshBadgeText
 	call SaveEndBattleTextPointers
+	farcall GetBadgesObtained
+	ld a, [wNumSetBits]
+	cp 5
+	jr nc, .Sabrina6thGym
+	jr .Sabrina5thGym
+.todone
+	jr .done
+.SabrinaRematch
+	ld hl, .PreBattleRematch1Text
+	call PrintText
+	call YesNoChoice
+	ld a, [wCurrentMenuItem]
+	and a
+	jr nz, .refused
+	ld hl, .PreBattleRematch2Text
+	call PrintText
+	call Delay3
+	ld a, OPP_SABRINA
+	ld [wCurOpponent], a
+	ld a, 3
+	ld [wTrainerNo], a
+	ld a, $4 ; new script
+	ld [wSaffronGymCurScript], a
+	ld [wCurMapScript], a
+	jr .endBattle
+.refused
+	ld hl, .PreBattleRematchRefusedText
+	call PrintText
+	jr .done
+.Sabrina5thGym
+	call Delay3
+	ld a, OPP_SABRINA
+	ld [wCurOpponent], a
+	ld a, 2
+	ld [wTrainerNo], a
+	ld a, $4 ; new script
+	ld [wSaffronGymCurScript], a
+	ld [wCurMapScript], a
+	jr .afterBatttle
+.Sabrina6thGym
 	ldh a, [hSpriteIndex]
 	ld [wSpriteIndex], a
 	call EngageMapTrainer
 	call InitBattleEnemyParameters
+.afterBatttle
 	ld a, $6
 	ld [wGymLeaderNo], a
+.endBattle
 	ld a, SCRIPT_SAFFRONGYM_SABRINA_POST_BATTLE
 	ld [wSaffronGymCurScript], a
 .done
@@ -149,6 +204,22 @@ SaffronGymSabrinaText:
 
 .PostBattleAdviceText:
 	text_far _SaffronGymSabrinaPostBattleAdviceText
+	text_end
+
+.PreBattleRematch1Text
+	text_far _SaffronGymRematchPreBattle1Text
+	text_end
+
+.PreBattleRematchRefusedText
+	text_far _GymRematchRefusedText
+	text_end
+
+.PreBattleRematch2Text
+	text_far _SaffronGymPreRematchBattle2Text
+	text_end
+
+SaffronGymRematchPostBattleText:
+	text_far _SaffronGymRematchPostBattleText
 	text_end
 
 SaffronGymSabrinaMarshBadgeInfoText:

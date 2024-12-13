@@ -65,6 +65,7 @@ INCLUDE "engine/events/hidden_objects/book_or_sculpture.asm"
 INCLUDE "engine/events/hidden_objects/elevator.asm"
 INCLUDE "engine/events/hidden_objects/town_map.asm"
 INCLUDE "engine/events/hidden_objects/pokemon_stuff.asm"
+INCLUDE "text/tmhm_names.asm"
 
 
 SECTION "bank4", ROMX
@@ -131,7 +132,7 @@ INCLUDE "engine/pokemon/bills_pc.asm"
 SECTION "Battle Engine 3", ROMX
 
 INCLUDE "engine/battle/print_type.asm"
-INCLUDE "engine/battle/save_trainer_name.asm"
+; INCLUDE "engine/battle/save_trainer_name.asm"
 
 
 SECTION "Battle Engine 4", ROMX
@@ -159,12 +160,19 @@ INCLUDE "engine/slots/game_corner_slots.asm"
 SECTION "Battle Engine 6", ROMX
 
 INCLUDE "data/moves/moves.asm"
-INCLUDE "data/pokemon/base_stats.asm"
 INCLUDE "data/pokemon/cries.asm"
 INCLUDE "engine/battle/trainer_ai.asm"
-INCLUDE "engine/battle/draw_hud_pokeball_gfx.asm"
-INCLUDE "gfx/trade.asm"
+INCLUDE "engine/battle/unused_stats_functions.asm"
+INCLUDE "engine/battle/scroll_draw_trainer_pic.asm"
+INCLUDE "engine/battle/move_effects/heal.asm"
+INCLUDE "engine/battle/move_effects/transform.asm"
+INCLUDE "engine/battle/move_effects/reflect_light_screen.asm"
+
+
+SECTION "Battle Engine 10", ROMX
+
 INCLUDE "engine/pokemon/evos_moves.asm"
+INCLUDE "data/pokemon/base_stats.asm"
 
 
 SECTION "Battle Core", ROMX
@@ -176,7 +184,6 @@ INCLUDE "engine/battle/effects.asm"
 SECTION "bank10", ROMX
 
 INCLUDE "engine/menus/pokedex.asm"
-INCLUDE "engine/overworld/emotion_bubbles.asm"
 INCLUDE "engine/movie/trade.asm"
 INCLUDE "engine/movie/intro.asm"
 INCLUDE "engine/movie/trade2.asm"
@@ -185,6 +192,7 @@ INCLUDE "engine/menus/options.asm"
 
 SECTION "Pokédex Rating", ROMX
 
+INCLUDE "engine/overworld/emotion_bubbles.asm"
 INCLUDE "engine/events/pokedex_rating.asm"
 
 
@@ -204,6 +212,8 @@ INCLUDE "engine/events/hidden_objects/indigo_plateau_hq.asm"
 
 SECTION "Battle Engine 7", ROMX
 
+INCLUDE "gfx/trade.asm"
+INCLUDE "engine/battle/draw_hud_pokeball_gfx.asm"
 INCLUDE "engine/battle/experience.asm"
 
 
@@ -278,6 +288,13 @@ INCLUDE "engine/gfx/mon_icons.asm"
 INCLUDE "engine/events/in_game_trades.asm"
 INCLUDE "engine/gfx/palettes.asm"
 INCLUDE "engine/menus/save.asm"
+INCLUDE "engine/items/tm_prices.asm"
+
+
+SECTION "Engine Spillover", ROMX
+
+INCLUDE "engine/menus/item_descriptions.asm"
+INCLUDE "engine/gfx/animated_tiles_code.asm"
 
 
 SECTION "Itemfinder 1", ROMX
@@ -372,8 +389,6 @@ SECTION "Battle Engine 8", ROMX
 
 INCLUDE "engine/battle/common_text.asm"
 INCLUDE "engine/battle/link_battle_versus_text.asm"
-INCLUDE "engine/battle/unused_stats_functions.asm"
-INCLUDE "engine/battle/scroll_draw_trainer_pic.asm"
 INCLUDE "engine/battle/pikachu_entrance_anim.asm"
 INCLUDE "engine/battle/decrement_pp.asm"
 INCLUDE "engine/events/pikachu_happiness.asm"
@@ -391,19 +406,16 @@ INCLUDE "engine/items/super_rod.asm"
 INCLUDE "engine/battle/init_battle.asm"
 INCLUDE "engine/battle/init_battle_variables.asm"
 INCLUDE "engine/battle/move_effects/focus_energy.asm"
-INCLUDE "engine/battle/move_effects/heal.asm"
-INCLUDE "engine/battle/move_effects/transform.asm"
-INCLUDE "engine/battle/move_effects/reflect_light_screen.asm"
 INCLUDE "engine/battle/move_effects/mist.asm"
 INCLUDE "engine/battle/move_effects/one_hit_ko.asm"
 INCLUDE "engine/battle/move_effects/pay_day.asm"
 INCLUDE "engine/battle/move_effects/paralyze.asm"
-INCLUDE "engine/items/tm_prices.asm"
 INCLUDE "engine/math/multiply_divide.asm"
 INCLUDE "engine/events/give_pokemon.asm"
 INCLUDE "engine/battle/get_trainer_name.asm"
 INCLUDE "engine/math/random.asm"
 INCLUDE "engine/predefs.asm"
+INCLUDE "engine/overworld/field_moves.asm"
 
 
 SECTION "Surfing Minigame", ROMX

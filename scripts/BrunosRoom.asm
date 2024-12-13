@@ -11,9 +11,12 @@ BrunosRoom_Script:
 BrunoShowOrHideExitBlock:
 ; Blocks or clears the exit to the next room.
 	ld hl, wCurrentMapScriptFlags
-	bit BIT_CUR_MAP_LOADED_1, [hl]
-	res BIT_CUR_MAP_LOADED_1, [hl]
+	bit 5, [hl]
+	res 5, [hl]
 	ret z
+	ld a, [wGameStage] ; Check if player has beat the game
+	and a
+	jr nz, .Rematch
 	CheckEvent EVENT_BEAT_BRUNOS_ROOM_TRAINER_0
 	jr z, .blockExitToNextRoom
 	ld a, $5
@@ -24,6 +27,11 @@ BrunoShowOrHideExitBlock:
 	ld [wNewTileBlockID], a
 	lb bc, 0, 2
 	predef_jump ReplaceTileBlock
+.Rematch
+	CheckEvent EVENT_BEAT_BRUNOS_ROOM_TRAINER_1
+	jr z, .blockExitToNextRoom
+	ld a, $5
+	jr .setExitBlock
 
 ResetBrunoScript:
 	xor a ; SCRIPT_BRUNOSROOM_DEFAULT
@@ -75,9 +83,9 @@ BrunosRoomDefaultScript:
 	jr z, BrunoScriptWalkIntoRoom
 .stopPlayerFromLeaving
 	ld a, TEXT_BRUNOSROOM_BRUNO_DONT_RUN_AWAY
-	ldh [hTextID], a
+	ldh [hSpriteIndexOrTextID], a
 	call DisplayTextID  ; "Don't run away!"
-	ld a, D_UP
+	ld a, D_UP | B_BUTTON
 	ld [wSimulatedJoypadStatesEnd], a
 	ld a, $1
 	ld [wSimulatedJoypadStatesIndex], a
@@ -110,24 +118,40 @@ BrunosRoomBrunoEndBattleScript:
 	ld a, [wIsInBattle]
 	cp $ff
 	jp z, ResetBrunoScript
+	ld a, [wGameStage] ; Check if player has beat the game
+	and a
+	jr nz, .Rematch
 	ld a, TEXT_BRUNOSROOM_BRUNO
-	ldh [hTextID], a
+.continue
+	ldh [hSpriteIndexOrTextID], a
 	jp DisplayTextID
+.Rematch
+	ld a, TEXT_BRUNOSROOM_BRUNO_REMATCH
+	jr .continue
 
 BrunosRoom_TextPointers:
 	def_text_pointers
 	dw_const BrunosRoomBrunoText,            TEXT_BRUNOSROOM_BRUNO
+	dw_const BrunosRoomBrunoRematchText,     TEXT_BRUNOSROOM_BRUNO_REMATCH
 	dw_const BrunosRoomBrunoDontRunAwayText, TEXT_BRUNOSROOM_BRUNO_DONT_RUN_AWAY
 
 BrunosRoomTrainerHeaders:
 	def_trainers
 BrunosRoomTrainerHeader0:
 	trainer EVENT_BEAT_BRUNOS_ROOM_TRAINER_0, 0, BrunoBeforeBattleText, BrunoEndBattleText, BrunoAfterBattleText
+BrunosRoomTrainerHeader1:
+	trainer EVENT_BEAT_BRUNOS_ROOM_TRAINER_1, 0, BrunoRematchBeforeBattleText, BrunoRematchEndBattleText, BrunoRematchAfterBattleText
 	db -1 ; end
 
 BrunosRoomBrunoText:
 	text_asm
 	ld hl, BrunosRoomTrainerHeader0
+	call TalkToTrainer
+	jp TextScriptEnd
+
+BrunosRoomBrunoRematchText:
+	text_asm
+	ld hl, BrunosRoomTrainerHeader1
 	call TalkToTrainer
 	jp TextScriptEnd
 
@@ -141,6 +165,18 @@ BrunoEndBattleText:
 
 BrunoAfterBattleText:
 	text_far _BrunoAfterBattleText
+	text_end
+
+BrunoRematchBeforeBattleText:
+	text_far _BrunoRematchBeforeBattleText
+	text_end
+
+BrunoRematchEndBattleText:
+	text_far _BrunoRematchEndBattleText
+	text_end
+
+BrunoRematchAfterBattleText:
+	text_far _BrunoRematchAfterBattleText
 	text_end
 
 BrunosRoomBrunoDontRunAwayText:

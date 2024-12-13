@@ -7,8 +7,8 @@ AskName:
 	hlcoord 0, 0
 	lb bc, 4, 11
 	call z, ClearScreenArea ; only if in wild battle
-	ld a, [wCurPartySpecies]
-	ld [wNamedObjectIndex], a
+	ld a, [wcf91]
+	ld [wd11e], a
 	call GetMonName
 	ld hl, DoYouWantToNicknameText
 	call PrintText
@@ -44,7 +44,7 @@ AskName:
 .declinedNickname
 	ld d, h
 	ld e, l
-	ld hl, wNameBuffer
+	ld hl, wcd6d
 	ld bc, NAME_LENGTH
 	jp CopyData
 
@@ -82,8 +82,8 @@ DisplayNameRaterScreen::
 
 DisplayNamingScreen:
 	push hl
-	ld hl, wStatusFlags5
-	set BIT_NO_TEXT_DELAY, [hl]
+	ld hl, wd730
+	set 6, [hl]
 	call GBPalWhiteOutWithDelay3
 	call ClearScreen
 	call UpdateSprites
@@ -165,8 +165,8 @@ DisplayNamingScreen:
 	call GBPalNormal
 	xor a
 	ld [wAnimCounter], a
-	ld hl, wStatusFlags5
-	res BIT_NO_TEXT_DELAY, [hl]
+	ld hl, wd730
+	res 6, [hl]
 	ld a, [wIsInBattle]
 	and a
 	jp z, LoadTextBoxTilePatterns
@@ -228,13 +228,6 @@ DisplayNamingScreen:
 	ld a, [hl]
 	ld [wNamingScreenLetter], a
 	call CalcStringLength
-	ld a, [wNamingScreenLetter]
-	cp "ﾞ"
-	ld de, Dakutens
-	jr z, .dakutensAndHandakutens
-	cp "ﾟ"
-	ld de, Handakutens
-	jr z, .dakutensAndHandakutens
 	ld a, [wNamingScreenType]
 	cp NAME_MON_SCREEN
 	jr nc, .checkMonNameLength
@@ -248,12 +241,6 @@ DisplayNamingScreen:
 	jr c, .addLetter
 	ret
 
-.dakutensAndHandakutens
-	push hl
-	call DakutensAndHandakutens
-	pop hl
-	ret nc
-	dec hl
 .addLetter
 	ld a, [wNamingScreenLetter]
 	ld [hli], a
@@ -435,22 +422,6 @@ PrintNicknameAndUnderscores:
 	ld [hl], $77 ; raised underscore tile id
 	ret
 
-DakutensAndHandakutens:
-	push de
-	call CalcStringLength
-	dec hl
-	ld a, [hl]
-	pop hl
-	ld de, $2
-	call IsInArray
-	ret nc
-	inc hl
-	ld a, [hl]
-	ld [wNamingScreenLetter], a
-	ret
-
-INCLUDE "data/text/dakutens.asm"
-
 ; calculates the length of the string at wStringBuffer and stores it in c
 CalcStringLength:
 	ld hl, wStringBuffer
@@ -472,12 +443,12 @@ PrintNamingText:
 	ld de, RivalsTextString
 	dec a
 	jr z, .notNickname
-	ld a, [wCurPartySpecies]
+	ld a, [wcf91]
 	ld [wMonPartySpriteSpecies], a
 	push af
 	farcall WriteMonPartySpriteOAMBySpecies
 	pop af
-	ld [wNamedObjectIndex], a
+	ld [wd11e], a
 	call GetMonName
 	hlcoord 4, 1
 	call PlaceString

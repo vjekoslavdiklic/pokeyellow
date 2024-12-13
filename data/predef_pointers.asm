@@ -101,7 +101,7 @@ PredefPointers::
 	add_predef EnterMapAnim, $1E ; wrong bank
 	add_predef GetTileTwoStepsInFrontOfPlayer
 	add_predef CheckForCollisionWhenPushingBoulder
-	add_predef PrintStrengthText
+	add_predef PrintStrengthTxt
 	add_predef PickUpItem
 	add_predef PrintMoveType
 	add_predef LoadMovePPs
@@ -109,3 +109,4 @@ PredefPointers::
 	add_predef DrawHP2
 	add_predef DisplayElevatorFloorMenu
 	add_predef OaksAideScript
+	add_predef TryFieldMove

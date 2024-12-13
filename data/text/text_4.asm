@@ -3,14 +3,14 @@ _FileDataDestroyedText::
 	line "destroyed!"
 	prompt
 
-_WouldYouLikeToSaveText::
-	text "Would you like to"
-	line "SAVE the game?"
-	done
+; _WouldYouLikeToSaveText::
+; 	text "Would you like to"
+; 	line "SAVE the game?"
+; 	done
 
-_SavingText::
-	text "Saving..."
-	done
+; _SavingText::
+; 	text "Saving..."
+; 	done
 
 _GameSavedText::
 	text "<PLAYER> saved"
@@ -44,7 +44,7 @@ _EvolvedText::
 _IntoText::
 	text_start
 	line "into @"
-	text_ram wNameBuffer
+	text_ram wcd6d
 	text "!"
 	done
 
@@ -53,4 +53,19 @@ _StoppedEvolvingText::
 	text_ram wStringBuffer
 	text_start
 	line "stopped evolving!"
+	prompt
+
+_SortItemsText::
+	text "Would you like to"
+	next "sort items?"
+	done
+
+_SortComplete::
+	text "Sorting is"
+	next "complete."
+	prompt
+
+_NothingToSort::
+	text "There is nothing"
+	next "to sort."
 	prompt

@@ -1,7 +1,7 @@
 PewterGym_Script:
 	ld hl, wCurrentMapScriptFlags
-	bit BIT_CUR_MAP_LOADED_2, [hl]
-	res BIT_CUR_MAP_LOADED_2, [hl]
+	bit 6, [hl]
+	res 6, [hl]
 	call nz, .LoadNames
 	call EnableAutoTextBoxDrawing
 	ld hl, PewterGymTrainerHeaders
@@ -43,23 +43,26 @@ PewterGymBrockPostBattle:
 	jp z, PewterGymResetScripts
 	ld a, D_RIGHT | D_LEFT | D_UP | D_DOWN
 	ld [wJoyIgnore], a
+	ld a, [wGameStage] ; Check if player has beat the game
+	and a
+	jr nz, BrockRematchPostBattle
 ; fallthrough
 PewterGymScriptReceiveTM34:
 	ld a, TEXT_PEWTERGYM_BROCK_WAIT_TAKE_THIS
-	ldh [hTextID], a
+	ldh [hSpriteIndexOrTextID], a
 	call DisplayTextID
 	SetEvent EVENT_BEAT_BROCK
 	lb bc, TM_BIDE, 1
 	call GiveItem
 	jr nc, .BagFull
 	ld a, TEXT_PEWTERGYM_RECEIVED_TM34
-	ldh [hTextID], a
+	ldh [hSpriteIndexOrTextID], a
 	call DisplayTextID
 	SetEvent EVENT_GOT_TM34
 	jr .gymVictory
 .BagFull
 	ld a, TEXT_PEWTERGYM_TM34_NO_ROOM
-	ldh [hTextID], a
+	ldh [hSpriteIndexOrTextID], a
 	call DisplayTextID
 .gymVictory
 	ld hl, wObtainedBadges
@@ -81,6 +84,12 @@ PewterGymScriptReceiveTM34:
 
 	jp PewterGymResetScripts
 
+BrockRematchPostBattle:
+	ld a, TEXT_PEWTERGYM_REMATCH_POST_BATTLE
+	ldh [hSpriteIndexOrTextID], a
+	call DisplayTextID
+	jp PewterGymResetScripts
+
 PewterGym_TextPointers:
 	def_text_pointers
 	dw_const PewterGymBrockText,             TEXT_PEWTERGYM_BROCK
@@ -89,6 +98,7 @@ PewterGym_TextPointers:
 	dw_const PewterGymBrockWaitTakeThisText, TEXT_PEWTERGYM_BROCK_WAIT_TAKE_THIS
 	dw_const PewterGymReceivedTM34Text,      TEXT_PEWTERGYM_RECEIVED_TM34
 	dw_const PewterGymTM34NoRoomText,        TEXT_PEWTERGYM_TM34_NO_ROOM
+	dw_const PewterGymRematchPostBattleText, TEXT_PEWTERGYM_REMATCH_POST_BATTLE
 
 PewterGymTrainerHeaders:
 	def_trainers 2
@@ -106,15 +116,18 @@ PewterGymBrockText:
 	call DisableWaitingAfterTextDisplay
 	jr .done
 .afterBeat
+	ld a, [wGameStage] ; Check if player has beat the game
+	and a
+	jr nz, .BrockRematch
 	ld hl, .PostBattleAdviceText
 	call PrintText
 	jr .done
 .beforeBeat
 	ld hl, .PreBattleText
 	call PrintText
-	ld hl, wStatusFlags3
-	set BIT_TALKED_TO_TRAINER, [hl]
-	set BIT_PRINT_END_BATTLE_TEXT, [hl]
+	ld hl, wd72d
+	set 6, [hl]
+	set 7, [hl]
 	ld hl, PewterGymBrockReceivedBoulderBadgeText
 	ld de, PewterGymBrockReceivedBoulderBadgeText
 	call SaveEndBattleTextPointers
@@ -126,6 +139,30 @@ PewterGymBrockText:
 	ld [wGymLeaderNo], a
 	xor a
 	ldh [hJoyHeld], a
+	jr .endBattle
+.BrockRematch
+	ld hl, .PreBattleRematch1Text
+	call PrintText
+	call YesNoChoice
+	ld a, [wCurrentMenuItem]
+	and a
+	jr nz, .refused
+	ld hl, .PreBattleRematch2Text
+	call PrintText
+	call Delay3
+	ld a, OPP_BROCK
+	ld [wCurOpponent], a
+	ld a, 2
+	ld [wTrainerNo], a
+	ld a, $4 ; new script
+	ld [wPewterGymCurScript], a
+	ld [wCurMapScript], a
+	jr .endBattle
+.refused
+	ld hl, .PreBattleRematchRefusedText
+	call PrintText
+	jr .done
+.endBattle
 	ld a, SCRIPT_PEWTERGYM_BROCK_POST_BATTLE
 	ld [wPewterGymCurScript], a
 	ld [wCurMapScript], a
@@ -138,6 +175,22 @@ PewterGymBrockText:
 
 .PostBattleAdviceText:
 	text_far _PewterGymBrockPostBattleAdviceText
+	text_end
+
+.PreBattleRematch1Text
+	text_far _PewterGymRematchPreBattle1Text
+	text_end
+
+.PreBattleRematchRefusedText
+	text_far _GymRematchRefusedText
+	text_end
+
+.PreBattleRematch2Text
+	text_far _PewterGymPreRematchBattle2Text
+	text_end
+
+PewterGymRematchPostBattleText:
+	text_far _PewterGymRematchPostBattleText
 	text_end
 
 PewterGymBrockWaitTakeThisText:
@@ -189,7 +242,7 @@ PewterGymGuideText:
 	ld a, [wCurrentMenuItem]
 	and a
 	jr nz, .PewterGymGuideBeginAdviceText
-	ld a, [wd471]
+	ld a, [wd472]
 	bit 7, a
 	jp nz, .asm_5c3fa
 	ld hl, PewterGymGuideBeginAdviceText

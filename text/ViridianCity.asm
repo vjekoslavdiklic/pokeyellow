@@ -25,8 +25,21 @@ _ViridianCityOldManHadMyCoffeeNowText::
 
 _ViridianCityOldManLosingMyTouchText::
 	text "That didn't work!"
-	line "I must be losing"
+	line "I may be losing"
 	cont "my touch."
+
+	para "Maybe that was"
+	line "just a strong"
+	cont "#MON."
+	
+	para "Apparently, if"
+	line "you hold START"
+	cont "while pressing A"
+	cont "on STATS,"
+
+	para "You can check to"
+	line "see a #MON's"
+	cont "growth potential."
 
 	para "I've run out of"
 	line "# BALLs too."
@@ -61,9 +74,8 @@ _ViridianCityGambler1GymLeaderReturnedText::
 
 _ViridianCityYoungster2YouWantToKnowAboutText::
 	text "You want to know"
-	line "about the 2 kinds"
-	cont "of caterpillar"
-	cont "#MON?"
+	line "about #MON"
+	cont "growth potential?"
 	done
 
 ViridianCityYoungster2OkThenText::
@@ -71,12 +83,42 @@ ViridianCityYoungster2OkThenText::
 	done
 
 ViridianCityYoungster2CaterpieAndWeedleDescriptionText::
-	text "CATERPIE has no"
-	line "poison, but"
-	cont "WEEDLE does."
+	text "That's called"
+	line "Diversity Value"
+	cont "or DV for short."
 
-	para "Watch out for its"
-	line "POISON STING!"
+	para "A DV can range"
+	line "from 0 to 15"
+	cont "with the higher"
+	cont "being better."
+
+	para "DVs reflect"
+	line "the traits of an"
+	cont "individual"
+	cont "#MON."
+
+	para "The DV value"
+	line "determines stat"
+	cont "variation."
+	
+	para "At lvl 100,"
+	line "the difference"
+	cont "between a 0 and"
+	cont "15 DV, would be"
+	cont "30 stat points."
+
+	para "I wouldn't"
+	line "worry about it"
+	cont "too much, but"
+	cont "you can check"
+	cont "via the STATS"
+	cont "page."
+
+	para "Simply hold"
+	line "START and then"
+	cont "press A on STATS"
+	cont "in the #MON"
+	cont "menu."
 	done
 
 _ViridianCityGirlHasntHadHisCoffeeYetText::
@@ -121,7 +163,7 @@ ViridianCityFisherYouCanHaveThisText::
 
 _ViridianCityFisherReceivedTM42Text::
 	text "<PLAYER> received"
-	line "TM42!@"
+	line "TM42 DRMEATR!@"
 	text_end
 
 _ViridianCityFisherTM42ExplanationText::
@@ -165,9 +207,14 @@ _ViridianCityTrainerTips1Text::
 	line "and expand your"
 	cont "collection!"
 
-	para "The more you have,"
-	line "the easier it is"
-	cont "to fight!"
+	para "Many #MON"
+	line "have recently"
+	cont "moved habitats."
+	
+	para "Keep an eye out"
+	line "on new routes"
+	cont "for unexpected"
+	cont "species!"
 	done
 
 _ViridianCityTrainerTips2Text::
@@ -178,10 +225,9 @@ _ViridianCityTrainerTips2Text::
 	cont "limited by their"
 	cont "POWER POINTs, PP."
 
-	para "To replenish PP,"
-	line "rest your tired"
-	cont "#MON at a"
-	cont "#MON CENTER!"
+	para "Enemy trainers"
+	line "are not limited"
+	cont "by this, however!"
 	done
 
 _ViridianCityGymSignText::

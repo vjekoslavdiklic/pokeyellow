@@ -14,11 +14,12 @@ HiddenItems:
 	ld a, 1
 	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
 	ld a, [wHiddenObjectFunctionArgument] ; item ID
-	ld [wNamedObjectIndex], a
+	ld [wd11e], a
 	call GetItemName
 	tx_pre_jump FoundHiddenItemText
 
 .itemAlreadyFound
+	predef TryFieldMove
 	ld a, $ff
 	ldh [hItemAlreadyFound], a
 	ret
@@ -38,9 +39,15 @@ FoundHiddenItemText::
 	ld c, a
 	ld b, FLAG_SET
 	predef FlagActionPredef
+	ld a, [wAudioFadeOutControl]
+	push af
+	xor a
+	ld [wAudioFadeOutControl], a
 	ld a, SFX_GET_ITEM_2
 	call PlaySoundWaitForCurrent
 	call WaitForSoundToFinish
+	pop af
+	ld [wAudioFadeOutControl], a
 	jp TextScriptEnd
 .bagFull
 	call WaitForTextScrollButtonPress ; wait for button press
@@ -82,7 +89,7 @@ HiddenCoins:
 	cp 20
 	jr z, .bcd20
 	cp 40
-	jr z, .bcd20 ; should be bcd40
+	jr z, .bcd40
 	jr .bcd100
 
 .doNotPickUpCoins
@@ -98,7 +105,7 @@ HiddenCoins:
 	ld a, $20
 	ldh [hCoins + 1], a
 	jr .bcdDone
-.bcd40 ; due to a typo, this is never used
+.bcd40
 	ld a, $40
 	ldh [hCoins + 1], a
 	jr .bcdDone

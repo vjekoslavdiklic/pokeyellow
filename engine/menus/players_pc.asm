@@ -5,8 +5,8 @@ PlayerPC::
 	xor a
 	ld [wBagSavedMenuItem], a
 	ld [wParentMenuItem], a
-	ld a, [wMiscFlags]
-	bit BIT_USING_GENERIC_PC, a
+	ld a, [wFlags_0xcd60]
+	bit 3, a ; accessing player's PC through another PC?
 	jr nz, PlayerPCMenu
 ; accessing it directly
 	ld a, SFX_TURN_ON_PC
@@ -15,12 +15,12 @@ PlayerPC::
 	call PrintText
 
 PlayerPCMenu:
-	ld hl, wStatusFlags5
-	set BIT_NO_TEXT_DELAY, [hl]
+	ld hl, wd730
+	set 6, [hl]
 	ld a, [wParentMenuItem]
 	ld [wCurrentMenuItem], a
-	ld hl, wMiscFlags
-	set BIT_NO_MENU_BUTTON_SOUND, [hl]
+	ld hl, wFlags_0xcd60
+	set 5, [hl]
 	call LoadScreenTilesFromBuffer2
 	hlcoord 0, 0
 	lb bc, 8, 14
@@ -49,7 +49,7 @@ PlayerPCMenu:
 	ld hl, WhatDoYouWantText
 	call PrintText
 	call HandleMenuInput
-	bit BIT_B_BUTTON, a
+	bit 1, a
 	jp nz, ExitPlayerPC
 	call PlaceUnfilledArrowMenuCursor
 	ld a, [wCurrentMenuItem]
@@ -62,22 +62,22 @@ PlayerPCMenu:
 	jp z, PlayerPCToss
 
 ExitPlayerPC:
-	ld a, [wMiscFlags]
-	bit BIT_USING_GENERIC_PC, a
+	ld a, [wFlags_0xcd60]
+	bit 3, a ; accessing player's PC through another PC?
 	jr nz, .next
 ; accessing it directly
 	ld a, SFX_TURN_OFF_PC
 	call PlaySound
 	call WaitForSoundToFinish
 .next
-	ld hl, wMiscFlags
-	res BIT_NO_MENU_BUTTON_SOUND, [hl]
+	ld hl, wFlags_0xcd60
+	res 5, [hl]
 	call LoadScreenTilesFromBuffer2
 	xor a
 	ld [wListScrollOffset], a
 	ld [wBagSavedMenuItem], a
-	ld hl, wStatusFlags5
-	res BIT_NO_TEXT_DELAY, [hl]
+	ld hl, wd730
+	res 6, [hl]
 	xor a
 	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
 	ret
@@ -106,6 +106,9 @@ PlayerPCDeposit:
 	ld [wListMenuID], a
 	call DisplayListMenuID
 	jp c, PlayerPCMenu
+	ld a, [wcf91]
+	call IsItemHM
+	jr c, .CantDeposit
 	call IsKeyItem
 	ld a, 1
 	ld [wItemQuantity], a
@@ -133,6 +136,10 @@ PlayerPCDeposit:
 	call PlaySound
 	call WaitForSoundToFinish
 	ld hl, ItemWasStoredText
+	call PrintText
+	jp .loop
+.CantDeposit
+	ld hl, TooImportantToDepositText
 	call PrintText
 	jp .loop
 
@@ -224,7 +231,7 @@ PlayerPCToss:
 	ld a, [wIsKeyItem]
 	and a
 	jr nz, .next
-	ld a, [wCurItem]
+	ld a, [wcf91]
 	call IsItemHM
 	jr c, .next
 ; if it's not a key item, there can be more than one of the item
@@ -244,6 +251,10 @@ PlayersPCMenuEntries:
 	next "DEPOSIT ITEM"
 	next "TOSS ITEM"
 	next "LOG OFF@"
+
+TooImportantToDepositText:
+	text_far _TooImportantToDepositText
+	text_end
 
 TurnedOnPC2Text:
 	text_far _TurnedOnPC2Text

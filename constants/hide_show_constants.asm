@@ -32,6 +32,7 @@ DEF SHOW EQU $15
 	const HS_SAFFRON_CITY_D                ; 17
 	const HS_SAFFRON_CITY_E                ; 18
 	const HS_SAFFRON_CITY_F                ; 19
+	const HS_ROUTE_1_OAK				   ; EB
 	const HS_ROUTE_2_ITEM_1                ; 1A
 	const HS_ROUTE_2_ITEM_2                ; 1B
 	const HS_ROUTE_4_ITEM                  ; 1C
@@ -46,6 +47,7 @@ DEF SHOW EQU $15
 	const HS_NUGGET_BRIDGE_GUY             ; 25
 	const HS_ROUTE_24_ITEM                 ; 26
 	const HS_ROUTE_25_ITEM                 ; 27
+	const HS_REDS_HOUSE_2F_MR_MIME         ; 27
 	const HS_DAISY_SITTING                 ; 28
 	const HS_DAISY_WALKING                 ; 29
 	const HS_TOWN_MAP                      ; 2A
@@ -80,6 +82,7 @@ DEF SHOW EQU $15
 	const HS_WARDENS_HOUSE_ITEM            ; 47
 	const HS_POKEMON_MANSION_1F_ITEM_1     ; 48
 	const HS_POKEMON_MANSION_1F_ITEM_2     ; 49
+	const HS_INDIGO_PLATEU_LOBBY_CLERK_HS  ; 30
 	const HS_FIGHTING_DOJO_GIFT_1          ; 4A
 	const HS_FIGHTING_DOJO_GIFT_2          ; 4B
 	const HS_SILPH_CO_1F_RECEPTIONIST      ; 4C
@@ -199,8 +202,10 @@ DEF SHOW EQU $15
 	const HS_SILPH_CO_11F_JESSIE           ; BE
 	const HS_UNUSED_MAP_F4_1               ; BF XXX sprite doesn't exist
 	const HS_POKEMON_MANSION_2F_ITEM       ; C0
+	const HS_POKEMON_MANSION_2F_OAK
 	const HS_POKEMON_MANSION_3F_ITEM_1     ; C1
 	const HS_POKEMON_MANSION_3F_ITEM_2     ; C2
+	const HS_POKEMON_MANSION_B1F_MEW
 	const HS_POKEMON_MANSION_B1F_ITEM_1    ; C3
 	const HS_POKEMON_MANSION_B1F_ITEM_2    ; C4
 	const HS_POKEMON_MANSION_B1F_ITEM_3    ; C5
@@ -228,7 +233,12 @@ DEF SHOW EQU $15
 	const HS_CERULEAN_CAVE_B1F_ITEM_4      ; DB
 	const HS_VICTORY_ROAD_1F_ITEM_1        ; DC
 	const HS_VICTORY_ROAD_1F_ITEM_2        ; DD
+	const HS_LANCESROOM_LANCE
+	const HS_LANCESROOM_LANCE_REMATCH
 	const HS_CHAMPIONS_ROOM_OAK            ; DE
+	const HS_CHAMPIONS_ROOM_JOLTEON
+	const HS_CHAMPIONS_ROOM_FLAREON
+	const HS_CHAMPIONS_ROOM_VAPOREON
 	const HS_SEAFOAM_ISLANDS_1F_BOULDER_1  ; DF
 	const HS_SEAFOAM_ISLANDS_1F_BOULDER_2  ; E0
 	const HS_SEAFOAM_ISLANDS_B1F_BOULDER_1 ; E1
@@ -245,4 +255,10 @@ DEF SHOW EQU $15
 	const HS_DAISY_SITTING_COPY            ; EC
 	const HS_DAISY_WALKING_COPY            ; ED
 	const HS_TOWN_MAP_COPY                 ; EE
+	const HS_LORELEISROOM_LORELEI
+	const HS_LORELEISROOM_LORELEI_REMATCH
+	const HS_BRUNOSROOM_BRUNO
+	const HS_BRUNOSROOM_BRUNO_REMATCH
+	const HS_AGATHASROOM_AGATHA
+	const HS_AGATHASROOM_AGATHA_REMATCH
 DEF NUM_HS_OBJECTS EQU const_value

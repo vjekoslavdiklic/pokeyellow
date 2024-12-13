@@ -43,13 +43,13 @@ _WarpToLastPokemonCenterText::
 	done
 
 _CannotUseTeleportNowText::
-	text_ram wNameBuffer
+	text_ram wcd6d
 	text " can't"
 	line "use TELEPORT now."
 	prompt
 
 _CannotFlyHereText::
-	text_ram wNameBuffer
+	text_ram wcd6d
 	text " can't"
 	line "FLY here."
 	prompt
@@ -75,16 +75,16 @@ _CannotGetOffHereText::
 	prompt
 
 _UsedStrengthText::
-	text_ram wNameBuffer
+	text_ram wcd6d
 	text " used"
 	line "STRENGTH.@"
 	text_end
 
 _CanMoveBouldersText::
-	text_ram wNameBuffer
+	text_ram wcd6d
 	text " can"
 	line "move boulders."
-	prompt
+	done
 
 _CurrentTooFastText::
 	text "The current is"
@@ -99,7 +99,7 @@ _CyclingIsFunText::
 _GotMonText::
 	text "<PLAYER> got"
 	line "@"
-	text_ram wNameBuffer
+	text_ram wcd6d
 	text "!@"
 	text_end
 
@@ -126,3 +126,13 @@ _BoxIsFullText::
 	para "Change the BOX at"
 	line "a #MON CENTER!"
 	done
+
+_BoxIsFullReminderText::
+	text "The #MON BOX"
+	line "is now full."
+	cont "It won't hold"
+	cont "more #MON."
+
+	para "Change the BOX at"
+	line "a #MON CENTER!"
+	prompt

@@ -57,7 +57,7 @@ PalletTownOakHeyWaitScript:
 	xor a
 	ld [wOakWalkedToPlayer], a
 	ld a, TEXT_PALLETTOWN_OAK
-	ldh [hTextID], a
+	ldh [hSpriteIndexOrTextID], a
 	call DisplayTextID
 	ld a, A_BUTTON | B_BUTTON | SELECT | START | D_RIGHT | D_LEFT | D_UP | D_DOWN
 	ld [wJoyIgnore], a
@@ -103,8 +103,8 @@ PalletTownOakWalksToPlayerScript:
 	ret
 
 PalletTownOakGreetsPlayerScript:
-	ld a, [wStatusFlags5]
-	bit BIT_SCRIPTED_NPC_MOVEMENT, a
+	ld a, [wd730]
+	bit 0, a
 	ret nz
 	ld a, ~(A_BUTTON | B_BUTTON)
 	ld [wJoyIgnore], a
@@ -115,7 +115,7 @@ PalletTownOakGreetsPlayerScript:
 	ld a, SPRITE_FACING_UP
 	ld [wSprite01StateData1FacingDirection], a
 	ld a, TEXT_PALLETTOWN_OAK
-	ldh [hTextID], a
+	ldh [hSpriteIndexOrTextID], a
 	call DisplayTextID
 	; oak faces the horizontally adjacent patch of grass to face pikachu
 	ld a, A_BUTTON | B_BUTTON | SELECT | START | D_RIGHT | D_LEFT | D_UP | D_DOWN
@@ -145,7 +145,7 @@ PalletTownPikachuBattleScript:
 	ld a, STARTER_PIKACHU
 	ld [wCurOpponent], a
 	ld a, 5
-	ld [wCurEnemyLevel], a
+	ld [wCurEnemyLVL], a
 
 	; trigger the next script
 	ld a, SCRIPT_PALLETTOWN_AFTER_PIKACHU_BATTLE
@@ -156,14 +156,14 @@ PalletTownAfterPikachuBattleScript:
 	ld a, 2
 	ld [wOakWalkedToPlayer], a
 	ld a, TEXT_PALLETTOWN_OAK
-	ldh [hTextID], a
+	ldh [hSpriteIndexOrTextID], a
 	call DisplayTextID
 	ld a, $2
 	ld [wSprite01StateData1MovementStatus], a
 	ld a, SPRITE_FACING_UP
 	ld [wSprite01StateData1FacingDirection], a
 	ld a, TEXT_PALLETTOWN_OAK_COME_WITH_ME
-	ldh [hTextID], a
+	ldh [hSpriteIndexOrTextID], a
 	call DisplayTextID
 	ld a, A_BUTTON | B_BUTTON | SELECT | START | D_RIGHT | D_LEFT | D_UP | D_DOWN
 	ld [wJoyIgnore], a
@@ -195,6 +195,21 @@ PalletTownPlayerFollowsOakScript:
 	and a ; is the movement script over?
 	ret nz
 
+	; Check and see if we didn't make it to Oak's Lab
+	CheckEvent EVENT_FOLLOWED_OAK_INTO_LAB
+	jr nz, .followed_oak
+	; move player one tile left
+	ld hl, wd736
+	set 1, [hl]
+	ld a, $1
+	ld [wSimulatedJoypadStatesIndex], a
+	ld a, D_LEFT | B_BUTTON
+	ld [wSimulatedJoypadStatesEnd], a
+	xor a
+	ld [wSpritePlayerStateData1ImageIndex], a
+	jp StartSimulatingJoypadStates
+
+.followed_oak
 	; trigger the next script
 	ld a, SCRIPT_PALLETTOWN_DAISY
 	ld [wPalletTownCurScript], a
@@ -281,7 +296,7 @@ PalletTownGirlText:
 	text_end
 
 PalletTownFisherText:
-	text_far _PalletTownFisherText
+	text_far _PalletTownFisherText 
 	text_end
 
 PalletTownOaksLabSignText:
