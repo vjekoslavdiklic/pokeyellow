@@ -1,15 +1,15 @@
 ItemPrices::
 	table_width 3, ItemPrices
-	bcd3 0     ; MASTER_BALL
+	bcd3 1		 ; MASTER_BALL
 	bcd3 1200  ; ULTRA_BALL
 	bcd3 600   ; GREAT_BALL
 	bcd3 200   ; POKE_BALL
 	bcd3 0     ; TOWN_MAP
-	bcd3 0     ; BICYCLE
+	bcd3 1     ; BICYCLE
 	bcd3 0     ; SURFBOARD
 	bcd3 1000  ; SAFARI_BALL
 	bcd3 0     ; POKEDEX
-	bcd3 0     ; MOON_STONE
+	bcd3 1     ; MOON_STONE
 	bcd3 100   ; ANTIDOTE
 	bcd3 250   ; BURN_HEAL
 	bcd3 250   ; ICE_HEAL
@@ -28,25 +28,25 @@ ItemPrices::
 	bcd3 0     ; MARSHBADGE
 	bcd3 0     ; VOLCANOBADGE
 	bcd3 0     ; EARTHBADGE
-	bcd3 550   ; ESCAPE_ROPE
+	bcd3 1   ; ESCAPE_ROPE
 	bcd3 10    ; REPEL
-	bcd3 0     ; OLD_AMBER
-	bcd3 2100  ; FIRE_STONE
-	bcd3 2100  ; THUNDER_STONE
-	bcd3 2100  ; WATER_STONE
+	bcd3 1     ; OLD_AMBER
+	bcd3 210  ; FIRE_STONE
+	bcd3 210  ; THUNDER_STONE
+	bcd3 210  ; WATER_STONE
 	bcd3 9800  ; HP_UP
 	bcd3 9800  ; PROTEIN
 	bcd3 9800  ; IRON
 	bcd3 9800  ; CARBOS
 	bcd3 9800  ; CALCIUM
-	bcd3 4800  ; RARE_CANDY
-	bcd3 0     ; DOME_FOSSIL
-	bcd3 0     ; HELIX_FOSSIL
+	bcd3 1  ; RARE_CANDY
+	bcd3 1     ; DOME_FOSSIL
+	bcd3 1     ; HELIX_FOSSIL
 	bcd3 0     ; SECRET_KEY
 	bcd3 0     ; ITEM_2C
 	bcd3 0     ; BIKE_VOUCHER
 	bcd3 5000  ; X_ACCURACY
-	bcd3 2100  ; LEAF_STONE
+	bcd3 210  ; LEAF_STONE
 	bcd3 0     ; CARD_KEY
 	bcd3 10000 ; NUGGET
 	bcd3 9800  ; ITEM_32
