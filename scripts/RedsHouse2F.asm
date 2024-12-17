@@ -18,5 +18,16 @@ RedsHouse2FDefaultScript:
 
 RedsHouse2F_TextPointers:
 	def_text_pointers
+	dw_const RedsHouse2FDratiniPokeballText, TEXT_REDS_HOUSE_2F_DRATINI_POKEBALL
+	text_end
 
-	text_end ; unused
+RedsHouse2FDratiniPokeballText:
+	text_asm
+	lb bc, DRATINI, 25
+	call GivePokemon
+	jr nc, .party_full
+	ld a, HS_REDS_HOUSE_2F_DRATINI_GIFT
+	ld [wMissableObjectIndex], a
+	predef HideObject
+.party_full
+	jp TextScriptEnd

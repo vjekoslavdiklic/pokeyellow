@@ -1,3 +1,6 @@
+	object_const_def
+	const_export REDS_HOUSE_2F_DRATINI_POKEBALL
+	
 RedsHouse2F_Object:
 	db $a ; border block
 
@@ -13,5 +16,6 @@ ENDC
 	def_bg_events
 
 	def_object_events
+	object_event  0,  5, SPRITE_POKE_BALL, STAY, NONE, TEXT_REDS_HOUSE_2F_DRATINI_POKEBALL
 
 	def_warps_to REDS_HOUSE_2F
