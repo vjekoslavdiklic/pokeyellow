@@ -251,7 +251,7 @@ MapHSPointers:
 	dw LoreleisRoomHS
 	dw BrunosRoomHS
 	dw AgathasRoomHS
-	dw NoHS
+	dw RedsHouse2F
 	assert_table_length NUM_MAPS
 	dw -1 ; end
 
@@ -602,4 +602,6 @@ AgathasRoomHS:
 	db AGATHAS_ROOM, AGATHASROOM_AGATHA,   			SHOW
 	db AGATHAS_ROOM, AGATHASROOM_AGATHA_REMATCH,   	HIDE
 	db $FF, $01, SHOW ; end
-	assert_table_length NUM_HS_OBJECTS + 1
+RedsHouse2F:
+	db REDS_HOUSE_2F, HS_REDS_HOUSE_2F_DRATINI_GIFT, SHOW
+	assert_table_length NUM_HS_OBJECTS+1
