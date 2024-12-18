@@ -11,6 +11,7 @@ IF DEF(_DEBUG)
 	warp_event  7,  3, ROCKET_HIDEOUT_ELEVATOR, 1
 	warp_event  7,  4, POKEMON_TOWER_7F, 1
 	warp_event  7,  5, SILPH_CO_11F, 4
+	warp_event  0,  3, CELADON_MANSION_ROOF_HOUSE, 4
 ENDC
 
 	def_bg_events
