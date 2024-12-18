@@ -241,11 +241,10 @@ WRAM0
 	"Tilemap"
 	"Overworld Map"
 	"WRAM"
-	"Party Data"
 	"Main Data"
 	"Current Box Data"
 	"GBC Palette Data"
-	org $df15
+	org $dd81
 	"Stack"
 VRAM $0
 	"VRAM"
@@ -257,6 +256,8 @@ SRAM $2
 	"Saved Boxes 1"
 SRAM $3
 	"Saved Boxes 2"
+SRAM $4
+		"Party Data"
 HRAM
 	"OAM DMA"
 	"HRAM"

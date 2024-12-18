@@ -1898,7 +1898,7 @@ wSavedNPCMovementDirections2Index:: db
 wPlayerName:: ds NAME_LENGTH
 
 
-SECTION "Party Data", WRAM0
+SECTION "Party Data", SRAM
 
 wPartyDataStart::
 
