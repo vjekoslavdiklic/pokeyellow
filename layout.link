@@ -233,30 +233,31 @@ ROMX $3E
 ROMX $3F
 	"Overworld Pikachu"
 WRAM0
-	"Audio RAM"
-	org $c100
-	"Sprite State Data"
-	org $c300
-	"OAM Buffer"
-	"Tilemap"
-	"Overworld Map"
-	"WRAM"
-	"Party Data"
-	"Main Data"
-	"Current Box Data"
-	"GBC Palette Data"
-	org $df15
-	"Stack"
+    "Audio RAM"
+    org $c100
+    "Sprite State Data"
+    org $c400
+    "OAM Buffer"
+    "Tilemap"
+    "Overworld Map"
+    "WRAM"
+    "Party Data"
+    "Main Data"
+    "GBC Palette Data"
+    org $de00
+    "Stack"
 VRAM $0
-	"VRAM"
+    "VRAM"
 SRAM $0
-	"Sprite Buffers"
+    "Sprite Buffers"
 SRAM $1
-	"Save Data"
+    "Save Data"
 SRAM $2
-	"Saved Boxes 1"
+    "Saved Boxes 1"
 SRAM $3
-	"Saved Boxes 2"
+    "Saved Boxes 2"
+SRAM $4
+    "Current Box Data"
 HRAM
-	"OAM DMA"
-	"HRAM"
+    "OAM DMA"
+    "HRAM"

@@ -2592,7 +2592,7 @@ wDayCareMon:: box_struct wDayCareMon
 wMainDataEnd::
 
 
-SECTION "Current Box Data", WRAM0
+SECTION "Current Box Data",  SRAM
 
 wBoxDataStart::
 
