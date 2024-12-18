@@ -48,6 +48,7 @@ DEF SHOW EQU $15
 	const HS_ROUTE_24_ITEM                 ; 26
 	const HS_ROUTE_25_ITEM                 ; 27
 	const HS_REDS_HOUSE_2F_MR_MIME         ; 27
+	const HS_REDS_HOUSE_2F_DRATINI_GIFT	   ; 	 
 	const HS_DAISY_SITTING                 ; 28
 	const HS_DAISY_WALKING                 ; 29
 	const HS_TOWN_MAP                      ; 2A
@@ -261,5 +262,4 @@ DEF SHOW EQU $15
 	const HS_BRUNOSROOM_BRUNO_REMATCH
 	const HS_AGATHASROOM_AGATHA
 	const HS_AGATHASROOM_AGATHA_REMATCH
-	const HS_REDS_HOUSE_2F_DRATINI_GIFT		 
 DEF NUM_HS_OBJECTS EQU const_value
