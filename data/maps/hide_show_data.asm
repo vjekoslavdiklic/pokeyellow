@@ -41,7 +41,7 @@ MapHSPointers:
 	dw Route24HS
 	dw Route25HS
 	dw RedsHouse1F
-	dw RedsHouse2FHS
+	dw NoHS
 	dw BluesHouseHS
 	dw OaksLabHS
 	dw NoHS
@@ -251,7 +251,7 @@ MapHSPointers:
 	dw LoreleisRoomHS
 	dw BrunosRoomHS
 	dw AgathasRoomHS
-	dw NoHS
+	dw RedsHouse2F
 	assert_table_length NUM_MAPS
 	dw -1 ; end
 
@@ -321,8 +321,6 @@ Route25HS:
 	db ROUTE_25, ROUTE25_TM_SEISMIC_TOSS, SHOW
 RedsHouse1F:
 	db REDS_HOUSE_1F, REDSHOUSE1F_MR_MIME, HIDE
-RedsHouse2FHS:
-	db REDS_HOUSE_2F, REDS_HOUSE_2F_DRATINI_POKEBALL, SHOW
 BluesHouseHS:
 	db BLUES_HOUSE, BLUESHOUSE_DAISY1,   SHOW
 	db BLUES_HOUSE, BLUESHOUSE_DAISY2,   HIDE
@@ -604,4 +602,6 @@ AgathasRoomHS:
 	db AGATHAS_ROOM, AGATHASROOM_AGATHA,   			SHOW
 	db AGATHAS_ROOM, AGATHASROOM_AGATHA_REMATCH,   	HIDE
 	db $FF, $01, SHOW ; end
+RedsHouse2F:
+	db REDS_HOUSE_2F, HS_REDS_HOUSE_2F_DRATINI_GIFT, SHOW
 	assert_table_length NUM_HS_OBJECTS+1
