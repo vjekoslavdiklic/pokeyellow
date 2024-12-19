@@ -23,7 +23,7 @@ RedsHouse2F_TextPointers:
 
 RedsHouse2FDratiniPokeballText:
 	text_asm
-	lb bc, DRATINI, 25
+	lb bc, DRATINI, 55
 	call GivePokemon
 	jr nc, .party_full
 	ld a, HS_REDS_HOUSE_2F_DRATINI_GIFT
